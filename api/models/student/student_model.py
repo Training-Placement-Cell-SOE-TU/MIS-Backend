@@ -5,7 +5,7 @@ from beanie import (Document, Indexed, Insert, Replace, SaveChanges,
                     ValidateOnSave)
 from beanie.odm.actions import before_event
 from bson.objectid import ObjectId as BsonObjectId
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, Field
 
 
 class CompanyLetterModel(BaseModel):
@@ -47,6 +47,16 @@ class SocialModel(BaseModel):
     platform_name: str
     profile_link: str
 
+class AddressModel(BaseModel):
+    """Address Model"""
+
+    pincode: str
+    state: str
+    district: str
+    country: str
+    address_line_1: str
+    address_line_2: Optional[str] = None
+
 
 class PydanticObjectId(BsonObjectId):
     @classmethod
@@ -63,38 +73,64 @@ class PydanticObjectId(BsonObjectId):
 class StudentModel(Document):
     """Maps student model to database document. """
 
+    # Extra functionality use fields
     is_account_active: bool = False
-    token: Optional[str] = None
+    is_banned: bool = False
+    token: Optional[str] = ''
+    
+    # Personal info 
     fname: str
     lname: Optional[str] = None
-    password: str #TODO: VALIDATOR --> check password strength
     roll_no: Indexed(str, unique=True)
     batch: int #TODO: VALIDATOR --> Cannot be greater than current year + 4
     branch: str
     gender: str
-    category: str #TODO: VALIDATOR --> General, ST, SC etc
-    minority: bool
-    handicap: bool
-    dob: datetime.date #TODO: VALIDATOR --> Cannot be greater than current year - 16
-    matric_pcnt: float  #TODO: VALIDATOR --> Cannot be greater than 100
-    yop_matric: int #TODO: VALIDATOR --> Cannot be greater than current year
-    hs_pcnt: float #TODO: VALIDATOR --> Cannot be greater than 100
-    yop_hs: int #TODO: VALIDATOR --> Cannot be greater than current year
-    sgpa: List[float] = [] #TODO: VALIDATOR --> Cannot be greater than 10
-    cgpa: float #TODO: VALIDATOR --> Cannot be greater than 10
+    email: Indexed(str, unique=True) #TODO: VALIDATOR --> email validator
     phone: Optional[str] = None
-    email: str #TODO: VALIDATOR --> email validator
+    password: str #TODO: VALIDATOR --> check password strength
+    
+    # Additional info
+    category: str = '' #TODO: VALIDATOR --> General, ST, SC etc
+    minority: Optional[bool] = None
+    handicap: Optional[bool] = None
+    dob: str = '' #TODO: VALIDATOR --> Cannot be greater than current year - 16
+    
+    # Educational info
+    matric_pcnt: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 100
+    yop_matric: Optional[int] = None #TODO: VALIDATOR --> Cannot be greater than current year
+    hs_pcnt: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 100
+    yop_hs: Optional[int] = None #TODO: VALIDATOR --> Cannot be greater than current year
+    sgpa: List[float] = [] #TODO: VALIDATOR --> Cannot be greater than 10
+    cgpa: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 10
+
+    # Skills info
     skills: List[str] = [] 
-    permanent_address: str
-    is_permanent_equals_present: bool
-    present_address: Optional[str] = None
-    applications: List[PydanticObjectId] = []
-    internship: List[InternshipModel] = []
+    
+    # Address info
+    permanent_address: Optional[AddressModel] = {}
+    is_permanent_equals_present: bool = False
+    present_address: Optional[AddressModel] = None
+    
+    # Application info
+    applications: Optional[List[PydanticObjectId]] = []
+    
+    # Company info
     current_company: Optional[str] = None #TODO: VALIDATOR --> Only valid if batch <= current year
     current_role: Optional[str] = None #TODO: VALIDATOR --> Only valid if batch <= current year
+    
+    # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = None
+    
+    # Internship info
+    internship: List[InternshipModel] = []
+    
+    # Certification info
     certifications: Optional[List[CertificationModel]] = None
+    
+    # Score card info
     score_cards: Optional[List[ScorecardModel]] = None
+    
+    #Social info
     social_links: Optional[List[SocialModel]] = None
 
 
