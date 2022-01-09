@@ -2,11 +2,9 @@ import datetime
 from typing import Dict, List, Optional
 from uuid import uuid4
 
-from beanie import (Document, Indexed, Insert, Replace, SaveChanges,
-                    ValidateOnSave)
-from beanie.odm.actions import before_event
+from beanie import Document, Indexed
 from bson.objectid import ObjectId as BsonObjectId
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, EmailStr, Field
 
 
 class CompanyLetterModel(BaseModel):
@@ -84,26 +82,26 @@ class StudentModel(Document):
     fname: str
     lname: Optional[str] = None
     roll_no: Indexed(str, unique=True)
-    batch: int #TODO: VALIDATOR --> Cannot be greater than current year + 4
+    batch: int 
     branch: str
     gender: str
-    email: Indexed(str, unique=True) #TODO: VALIDATOR --> email validator
+    email: Indexed(str, unique=True) 
     phone: Optional[str] = None
-    password: str #TODO: VALIDATOR --> check password strength
+    password: str 
     
     # Additional info
-    category: str = '' #TODO: VALIDATOR --> General, ST, SC etc
+    category: str = '' 
     minority: Optional[bool] = None
     handicap: Optional[bool] = None
-    dob: str = '' #TODO: VALIDATOR --> Cannot be greater than current year - 16
-    
+    dob: str = '' 
+
     # Educational info
-    matric_pcnt: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 100
-    yop_matric: Optional[int] = None #TODO: VALIDATOR --> Cannot be greater than current year
-    hs_pcnt: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 100
-    yop_hs: Optional[int] = None #TODO: VALIDATOR --> Cannot be greater than current year
-    sgpa: List[float] = [] #TODO: VALIDATOR --> Cannot be greater than 10
-    cgpa: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 10
+    matric_pcnt: Optional[float] = None 
+    yop_matric: Optional[int] = None 
+    hs_pcnt: Optional[float] = None 
+    yop_hs: Optional[int] = None 
+    sgpa: List[float] = [] 
+    cgpa: Optional[float] = None 
 
     # Skills info
     skills: List[str] = [] 
@@ -117,8 +115,8 @@ class StudentModel(Document):
     applications: Optional[List[PydanticObjectId]] = []
     
     # Company info
-    current_company: Optional[str] = None #TODO: VALIDATOR --> Only valid if batch <= current year
-    current_role: Optional[str] = None #TODO: VALIDATOR --> Only valid if batch <= current year
+    current_company: Optional[str] = None 
+    current_role: Optional[str] = None 
     
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = None
@@ -136,48 +134,10 @@ class StudentModel(Document):
     social_links: Optional[List[SocialModel]] = None
 
 
-    @before_event([ValidateOnSave, Insert])
-    async def to_lower(self):
-        """Converts fields to lowercase. """
 
-        fields: List[str] = [
-            self.fname, 
-            self.lname, 
-            self.roll_no, 
-            self.branch
-        ]
-
-        for field in fields:
-            field = field.lower()
-
-
-    @before_event([ValidateOnSave, Insert, SaveChanges, Replace])
-    async def validate_fname(self):
-        """fname should have atleast one letter. """
-
-        if len(self.fname) < 1:
-            raise ValueError("fname should contain atleast one letter")
-
-
-    @before_event([ValidateOnSave, Insert, SaveChanges, Replace])
-    async def validate_fname(self):
-        """Password criterias: 
-            --> Atleast 12 characters
-            --> 1 uppercase letter, 1 lowercase letter
-            --> 1 special character
-            --> 1 digit
-        """
-
-        #TODO: write your password validator here
-
-
-    class Settings:
-        """Validates field values just before saving 
-            the document to the database.
-        """
-
-        validate_on_save = True
-
+    class Config:
+        anystr_lower = True
+        
 
     class Collection:
         name = "student"
