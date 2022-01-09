@@ -6,8 +6,10 @@ from beanie import (Document, Indexed, Insert, Replace, SaveChanges,
                     ValidateOnSave)
 from beanie.odm.actions import before_event
 from bson.objectid import ObjectId as BsonObjectId
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import (BaseModel, Field, ValidationError, root_validator,
+                      validator)
 from pydantic.types import confloat, conint, conlist
+from email_validator import EmailNotValidError, validate_email
 
 
 class CompanyLetterModel(BaseModel):
@@ -93,7 +95,7 @@ class StudentModel(Document):
     gender: str
     email: Indexed(str, unique=True) #TODO: VALIDATOR --> email validator
     phone: Optional[str] = None
-    password: str #TODO: VALIDATOR --> check password strength
+    password: str
     
     # Additional info
     category: str = ''
@@ -139,50 +141,81 @@ class StudentModel(Document):
     #Social info
     social_links: Optional[List[SocialModel]] = None
 
-
-    @before_event([ValidateOnSave, Insert])
-    async def to_lower(self):
-        """Converts fields to lowercase. """
-
+    @root_validator(pre=True)
+    def to_lower(cls, values):
+        """Convert all keys to lower case."""
+        
         fields: List[str] = [
-            self.fname, 
-            self.lname, 
-            self.roll_no, 
-            self.branch
+            values['fname'],
+            values['lname'],
+            values['roll_no'],
+            values['branch']
         ]
 
         for field in fields:
             field = field.lower()
 
-
-    @before_event([ValidateOnSave, Insert, SaveChanges, Replace])
-    async def validate_fname(self):
+    @validator('fname')
+    def fname_validator(cls, fname):
         """fname should have atleast one letter. """
 
-        if len(self.fname) < 1:
+        if len(fname) < 1:
             raise ValueError("fname should contain atleast one letter")
+        return fname
 
+    @validator('password')
+    def validate_password(cls, password):
+        schar = '[@_!#$%^&*()<>?/\|}{~:]'.split('')
 
-    @before_event([ValidateOnSave, Insert, SaveChanges, Replace])
-    async def validate_fname(self):
-        """Password criterias: 
-            --> Atleast 12 characters
-            --> 1 uppercase letter, 1 lowercase letter
-            --> 1 special character
-            --> 1 digit
-        """
+        lower = upper = special_char = digit = False
+        
+        is_invalid = True
+       
+        if len(password) < 12:
+            raise ValueError("password should be atleast of length 12")
+        
+        for i in password:
+        
+            # checking for presence of lowercase alphabets 
+            if not lower and i.islower():
+                lower = True         
+        
+            # checking for presence of uppercase alphabets
+            elif not upper and i.isupper():
+                upper = True           
+        
+            # checking for presence of digits
+            elif not digit and i.isdigit():
+                digit = True           
+        
+            # checking for special characters
+            elif not special_char and (i in schar):  
+                special_char = True
+ 
+            else:
+                is_invalid = False
+                break
+                      
+        if is_invalid:
+            raise ValueError('invalid password')
 
-        #TODO: write your password validator here
-
-    @before_event([ValidateOnSave, Insert, SaveChanges, Replace])
-    async def validate_category(self):
+    @validator('category')
+    def validate_category(cls, category):
         """Validates category. """
 
         categories = ['General', 'EWS', 'ST', 'SC', 'OBC']
 
-        if self.category not in categories:
+        if category not in categories:
             raise ValueError(f"Category should be one of {categories}")
 
+    @validator('email')
+    def validate_email(cls, email):
+        """Validates email"""
+
+        try:
+            validate_email(email)
+        except EmailNotValidError:
+            raise ValueError("Invalid email")
 
     class Settings:
         """Validates field values just before saving 
