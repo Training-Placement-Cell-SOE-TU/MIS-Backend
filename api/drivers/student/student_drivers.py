@@ -16,7 +16,7 @@ class Student(ABC):
 
     async def add_student(
         self, 
-        student_details: student_request_schemas.RegisterStudent):
+        student_details: student_request_schemas.StudentPersonalInfoSchema):
 
         """Adds new student to the database"""
 
@@ -68,6 +68,44 @@ class CurrentStudent(Student):
     """Current student database driver.
         Performes all tasks related to current student
     """
+
+
+    async def update_personal_info(
+        self, 
+        info: student_request_schemas.StudentPersonalInfoSchema):
+
+        """Adds new student to the database"""
+
+        try:
+
+            student = student_model.StudentModel(**student_details.__dict__)
+            
+            student.password = pbkdf2_sha256.hash(student.password)
+
+            db_response = await student_model.StudentModel.save(student)
+            
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+        
+        except ValueError as e:
+            #TODO: log to logger
+            print(f"{e} val err : student driver")
+            raise exceptions.UnexpectedError()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
+
+
+
+
 
 
     def update_student(student_id: str, fields_to_update: Dict[str, str]):

@@ -1,11 +1,12 @@
 import datetime
 from typing import Dict, List, Optional
+from uuid import uuid4
 
 from beanie import (Document, Indexed, Insert, Replace, SaveChanges,
                     ValidateOnSave)
 from beanie.odm.actions import before_event
 from bson.objectid import ObjectId as BsonObjectId
-from pydantic import BaseModel, ValidationError, Field
+from pydantic import BaseModel, Field, ValidationError
 
 
 class CompanyLetterModel(BaseModel):
@@ -50,11 +51,11 @@ class SocialModel(BaseModel):
 class AddressModel(BaseModel):
     """Address Model"""
 
-    pincode: str
-    state: str
-    district: str
-    country: str
-    address_line_1: str
+    pincode: str = ''
+    state: str = ''
+    district: str = ''
+    country: str = ''
+    address_line_1: str = ''
     address_line_2: Optional[str] = None
 
 
@@ -77,6 +78,7 @@ class StudentModel(Document):
     is_account_active: bool = False
     is_banned: bool = False
     token: Optional[str] = ''
+    student_id: str = str(uuid4())
     
     # Personal info 
     fname: str

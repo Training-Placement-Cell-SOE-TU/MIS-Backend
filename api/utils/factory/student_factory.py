@@ -10,7 +10,7 @@ class StudentFactory:
     """
 
     @staticmethod
-    def student(data: student_request_schemas.RegisterStudent):
+    def student(data: student_request_schemas.StudentPersonalInfoSchema):
         todays_date = datetime.date.today()
 
         if(data.batch < todays_date.year):
