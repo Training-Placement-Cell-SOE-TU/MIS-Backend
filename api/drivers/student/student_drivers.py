@@ -1,5 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import final, Dict
+from typing import Dict, final
+
+from api.models.student import student_model
+from api.schemas.student.request_schemas import student_request_schemas
+from api.utils.exceptions import exceptions
+from passlib.hash import pbkdf2_sha256
+from pymongo.errors import DuplicateKeyError
 
 
 class Student(ABC):
@@ -8,9 +14,37 @@ class Student(ABC):
         tasks.
     """
 
-    @abstractmethod
-    def add_student():
-        pass
+    async def add_student(
+        self, 
+        student_details: student_request_schemas.StudentPersonalInfoSchema):
+
+        """Adds new student to the database"""
+
+        try:
+
+            student = student_model.StudentModel(**student_details.__dict__)
+            
+            student.password = pbkdf2_sha256.hash(student.password)
+
+            db_response = await student_model.StudentModel.save(student)
+            
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+        
+        except ValueError as e:
+            #TODO: log to logger
+            print(f"{e} val err : student driver")
+            raise exceptions.UnexpectedError()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
 
     @abstractmethod
     def update_student():
@@ -35,13 +69,49 @@ class CurrentStudent(Student):
         Performes all tasks related to current student
     """
 
-    def add_student(student_details):
-        pass
+
+    async def update_personal_info(
+        self, 
+        info: student_request_schemas.StudentPersonalInfoSchema):
+
+        """Adds new student to the database"""
+
+        try:
+
+            student = student_model.StudentModel(**info.__dict__)
+            
+            student.password = pbkdf2_sha256.hash(student.password)
+
+            db_response = await student_model.StudentModel.save(student)
+            
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+        
+        except ValueError as e:
+            #TODO: log to logger
+            print(f"{e} val err : student driver")
+            raise exceptions.UnexpectedError()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
+
+
+
+
+
 
     def update_student(student_id: str, fields_to_update: Dict[str, str]):
         pass
 
-    def get_student(search_fields: dict):
+    def get_student(search_fields):
         pass
 
     def ban_student(student_rollno: str):
@@ -57,10 +127,6 @@ class FormerStudent(Student):
         Performes all tasks related to current student
     """
 
-    def add_student(student_details):
-        #NOTE: not sure if this functionality is required for alumnis
-        
-        pass
 
     def update_student(student_id: str, fields_to_update: dict):
         pass

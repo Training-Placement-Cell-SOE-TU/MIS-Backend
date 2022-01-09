@@ -16,6 +16,22 @@ class EventNotFound(Exception):
         return f"{self.event_type} --> {self.message}"
 
 
+class DuplicateStudent(Exception):
+    """Handles dupicate student error
+
+        Attributes:
+            message --> additional message to log or print
+    
+    """
+ 
+    def __init__(self, message: str ="student already exists"):
+
+        self.message = message
+
+    def __repr__(self):
+        return {self.message}
+
+
 class UnexpectedError(Exception):
     """Handles unknown errors
 

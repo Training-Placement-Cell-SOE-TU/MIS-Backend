@@ -1,14 +1,13 @@
 import asyncio
-from os import path, environ
+from os import environ, path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from pymongo import errors
 
 from api.config.database import database
 from api.routes.admin import admin_routes
 from api.routes.student import student_routes
-
-
 
 BASE_DIR = path.abspath(path.dirname(__file__))
 
@@ -42,9 +41,24 @@ def create_app():
             await asyncio.wait_for(database(), timeout=60.0)
 
         except asyncio.TimeoutError as e:
-            #TODO: log error
+            #TODO: log error and continuous retry
             print("DB Timeout")
             pass
+
+        except errors.DuplicateKeyError as e:
+            #TODO: Critical error, notify to admin and dev
+            print("DUPLICATE")
+
+        except Exception as e:
+            #TODO: Notify admin
+
+            print("EXCEPTION", e)
+
+
+    # Triggers functions on shutdown
+    @app.on_event("shutdown")
+    async def shutdown_event():
+        print("SHUTDOWN")
 
 
 
