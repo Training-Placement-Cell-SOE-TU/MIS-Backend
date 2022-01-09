@@ -78,7 +78,7 @@ class CurrentStudent(Student):
 
         try:
 
-            student = student_model.StudentModel(**student_details.__dict__)
+            student = student_model.StudentModel(**info.__dict__)
             
             student.password = pbkdf2_sha256.hash(student.password)
 
