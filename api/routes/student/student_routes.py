@@ -1,18 +1,21 @@
 
 import datetime
-from os import environ
 import pprint
+from os import environ
+
 import jwt
 import pydantic
 from api.controllers.student import field_update_controller
 from api.drivers.student import student_drivers
 from api.middlewares import authentication_middleware
 from api.models.student import student_model
+from api.repository import student
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
 from api.utils.factory import student_factory
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
 
 def construct_router():
@@ -29,7 +32,7 @@ def construct_router():
             {
                 "token" : request["user_id"],
                 "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
-                        datetime.timedelta(seconds=30)
+                        datetime.timedelta(minutes=120)
             },
             environ.get("SECRET_KEY"),
             algorithm=environ.get("JWT_ALGORITHM")
@@ -50,23 +53,54 @@ def construct_router():
     @student.put("/update/personal", status_code=status.HTTP_200_OK)
     async def update_personal_info(
         request: student_request_schemas.StudentPersonalInfoSchema,
-        authentication = Depends(authentication_middleware.is_authorized)):
+        user = Depends(authentication_middleware.is_authorized)):
 
-        if not authentication:
-            return JSONResponse(status_code=403, content="JWT expired")
+        """Student personal info update route"""
 
-        print(authentication)
-        response = await field_update_controller.update_personal_info(request, authentication)
+        response = await student.update(request, user)
+        return response
 
-        if response:
-            return JSONResponse(status_code=200, content="personal info updated")
+
+
+    @student.put("/update/additional", status_code=status.HTTP_200_OK)
+    async def update_additional_info(
+        request: student_request_schemas.StudentAdditionalInfoSchema,
+        user = Depends(authentication_middleware.is_authorized)):
+
+        """Student additional info update route"""
+
+        response = await student.update(request, user)
+        return response
+
+
+    @student.put("/update/educational", status_code=status.HTTP_200_OK)
+    async def update_educational_info(
+        request: student_request_schemas.StudentEducationalInfoSchema,
+        user = Depends(authentication_middleware.is_authorized)):
+
+        """Student educational info update route"""
+
+        response = await student.update(request, user)
+        return response
+
+    
+    @student.put("/update/address", status_code=status.HTTP_200_OK)
+    async def update_address_info(
+        request: student_request_schemas.StudentAddressInfoSchema,
+        user = Depends(authentication_middleware.is_authorized)):
+
+        """Student address info update route"""
+
+        response = await student.update(request, user)
+        return response
+
 
 
     @student.post("/add")
-    async def add_student(request: student_request_schemas.StudentPersonalInfoSchema):
+    async def add_student(request: student_request_schemas.RegisterStudentSchema):
         try:
 
-            student = student_factory.StudentFactory.student(request)
+            student = student_drivers.Student()
 
             response = await student.add_student(request)
             

@@ -32,6 +32,26 @@ class DuplicateStudent(Exception):
         return {self.message}
 
 
+class UnauthorizedUser(Exception):
+    """Handles user authorization error
+
+        Attributes:
+            message --> additional message to log or print
+    
+    """
+ 
+    def __init__(self, user_id, operation, 
+    message: str ="user is not authorized"):
+
+        self.user_id = user_id
+        self.operation = operation
+        self.message = message
+
+    def __repr__(self):
+        return f"User {self.user_id}: {self.message}, Attemped operation: {self.operation}"
+
+
+
 class UnexpectedError(Exception):
     """Handles unknown errors
 
