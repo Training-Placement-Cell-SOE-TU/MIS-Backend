@@ -7,6 +7,7 @@ from beanie import (Document, Indexed, Insert, Replace, SaveChanges,
 from beanie.odm.actions import before_event
 from bson.objectid import ObjectId as BsonObjectId
 from pydantic import BaseModel, Field, ValidationError
+from pydantic.types import confloat, conint, conlist
 
 
 class CompanyLetterModel(BaseModel):
@@ -75,6 +76,9 @@ class StudentModel(Document):
     """Maps student model to database document. """
 
     # Extra functionality use fields
+
+    current_year = datetime.datetime.now().year
+
     is_account_active: bool = False
     is_banned: bool = False
     token: Optional[str] = ''
@@ -84,7 +88,7 @@ class StudentModel(Document):
     fname: str
     lname: Optional[str] = None
     roll_no: Indexed(str, unique=True)
-    batch: int #TODO: VALIDATOR --> Cannot be greater than current year + 4
+    batch: conint(ge=2010, le=current_year+4)
     branch: str
     gender: str
     email: Indexed(str, unique=True) #TODO: VALIDATOR --> email validator
@@ -92,18 +96,18 @@ class StudentModel(Document):
     password: str #TODO: VALIDATOR --> check password strength
     
     # Additional info
-    category: str = '' #TODO: VALIDATOR --> General, ST, SC etc
+    category: str = ''
     minority: Optional[bool] = None
     handicap: Optional[bool] = None
     dob: str = '' #TODO: VALIDATOR --> Cannot be greater than current year - 16
     
     # Educational info
-    matric_pcnt: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 100
-    yop_matric: Optional[int] = None #TODO: VALIDATOR --> Cannot be greater than current year
-    hs_pcnt: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 100
-    yop_hs: Optional[int] = None #TODO: VALIDATOR --> Cannot be greater than current year
-    sgpa: List[float] = [] #TODO: VALIDATOR --> Cannot be greater than 10
-    cgpa: Optional[float] = None #TODO: VALIDATOR --> Cannot be greater than 10
+    matric_pcnt: Optional[confloat(ge=0, le=100)] = None
+    yop_matric: Optional[conint(ge=2005, le=current_year)] = None
+    hs_pcnt: Optional[confloat(ge=0, le=100)] = None
+    yop_hs: Optional[conint(ge=2005, le=current_year)] = None
+    sgpa: conlist(int, min_items=0, max_items=10) = []
+    cgpa: Optional[confloat(ge=0, le=10)] = None
 
     # Skills info
     skills: List[str] = [] 
@@ -169,6 +173,15 @@ class StudentModel(Document):
         """
 
         #TODO: write your password validator here
+
+    @before_event([ValidateOnSave, Insert, SaveChanges, Replace])
+    async def validate_category(self):
+        """Validates category. """
+
+        categories = ['General', 'EWS', 'ST', 'SC', 'OBC']
+
+        if self.category not in categories:
+            raise ValueError(f"Category should be one of {categories}")
 
 
     class Settings:
