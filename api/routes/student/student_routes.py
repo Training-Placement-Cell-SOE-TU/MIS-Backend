@@ -9,7 +9,7 @@ from api.controllers.student import field_update_controller
 from api.drivers.student import student_drivers
 from api.middlewares import authentication_middleware
 from api.models.student import student_model
-from api.repository import student
+from api.repository import student_repo
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
 from api.utils.factory import student_factory
@@ -24,21 +24,25 @@ def construct_router():
         tags=["Student"]
     )
 
-    @student.get("/login", status_code=status.HTTP_200_OK)
+    @student.post("/login", status_code=status.HTTP_200_OK)
     async def login(request: Request):
-        request = await request.json()
+        try:
+            request = await request.json()
 
-        jwt_payload = jwt.encode(
-            {
-                "token" : request["user_id"],
-                "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
-                        datetime.timedelta(minutes=120)
-            },
-            environ.get("SECRET_KEY"),
-            algorithm=environ.get("JWT_ALGORITHM")
-        )
+            jwt_payload = jwt.encode(
+                {
+                    "token" : request["user_id"],
+                    "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
+                            datetime.timedelta(days = int(environ.get("JWT_EXP", 1)))
+                },
+                environ.get("SECRET_KEY"),
+                algorithm=environ.get("JWT_ALGORITHM")
+            )
 
-        return jwt_payload
+            return JSONResponse(content={"token" : jwt_payload})
+
+        except Exception as e:
+            return JSONResponse(status_code=500, content = {"message" : "internal server error"})
 
 
     @student.get("/{roll_no}", status_code=status.HTTP_200_OK)
@@ -57,7 +61,7 @@ def construct_router():
 
         """Student personal info update route"""
 
-        response = await student.update(request, user)
+        response = await student_repo.update_student(request, user)
         return response
 
 
@@ -69,7 +73,7 @@ def construct_router():
 
         """Student additional info update route"""
 
-        response = await student.update(request, user)
+        response = await student_repo.update_student(request, user)
         return response
 
 
@@ -80,7 +84,7 @@ def construct_router():
 
         """Student educational info update route"""
 
-        response = await student.update(request, user)
+        response = await student_repo.update_student(request, user)
         return response
 
     
@@ -91,7 +95,7 @@ def construct_router():
 
         """Student address info update route"""
 
-        response = await student.update(request, user)
+        response = await student_repo.update_student(request, user)
         return response
 
 

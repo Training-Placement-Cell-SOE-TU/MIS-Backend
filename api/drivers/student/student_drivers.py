@@ -74,40 +74,6 @@ class Student:
             raise exceptions.UnexpectedError()
 
 
-    async def update_address_info(self, 
-        info: student_request_schemas.StudentAddressInfoSchema):
-
-        """Updates students data for address field"""
-
-        try:
-
-            student = await StudentModel.find_one(
-                StudentModel.student_id == info.student_id
-            )
-
-            info = info.__dict__
-
-            del info["student_id"]
-
-            for key, value in info.items():
-                setattr(student, key, value)
-
-            db_response = await StudentModel.save(student)
-            
-            return True
-
-        except DuplicateKeyError as e:
-            #TODO: log to logger
-            print(f"{e} dupkey err : student driver")
-            raise exceptions.DuplicateStudent()
-
-        except Exception as e:
-            #TODO: log to logger
-            print(f"{e} excep err : student driver")
-            raise exceptions.UnexpectedError()
-
-
-
     @abstractmethod
     def get_student():
         pass
