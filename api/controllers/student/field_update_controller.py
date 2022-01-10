@@ -3,14 +3,14 @@ from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
 
 
-async def update_personal_info(
+async def update(
     request: student_request_schemas.StudentPersonalInfoSchema,
     user: str):
     """Updates student's personal info"""
 
     # Check if the user is updating it's own info 
     if user != request.student_id:
-        raise exceptions.UnauthorizedUser(user, "update personal info")
+        raise exceptions.UnauthorizedUser(user, "update info")
 
     # Update personal info
     driver_response = await student_drivers.Student().update_general_info(request)
@@ -21,14 +21,6 @@ async def update_personal_info(
     
     
 async def update_skill_info(request):
-    pass
-
-async def update_additional_info(request: 
-    student_request_schemas.StudentAdditionalInfoSchema):
-    pass
-
-async def update_educational_info(request:
-    student_request_schemas.StudentEducationalInfoSchema):
     pass
 
 async def update_company_info(

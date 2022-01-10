@@ -1,7 +1,7 @@
 import datetime
 from typing import List, Optional
-
-from pydantic import BaseModel, EmailStr, validator
+import pprint
+from pydantic import BaseModel, EmailStr, validator, root_validator
 
 
 class RegisterStudentSchema(BaseModel):
@@ -109,10 +109,11 @@ class StudentEducationalInfoSchema(BaseModel):
     cgpa: float
 
 
-class StudentAddressDetailsSchema(BaseModel):
+class StudentAddressFormat(BaseModel):
     pincode: str
     state: str
     district: str
+    city: str
     country: str
     address_line_1: str
     address_line_2: Optional[str] = None
@@ -120,9 +121,33 @@ class StudentAddressDetailsSchema(BaseModel):
 
 class StudentAddressInfoSchema(BaseModel):
     student_id: str
-    permanent_address: StudentAddressDetailsSchema
+    permanent_address: StudentAddressFormat
     is_permanent_equals_present: bool
-    present_address: StudentAddressDetailsSchema
+    present_address: Optional[StudentAddressFormat] = None
+
+
+    @root_validator(pre=True)
+    def validate_addresses(cls, values):
+        """Checks if is_permanent_equals_present is true,
+            then present_address will be empty,
+            else will be valid dictionary
+        """
+        print(values)
+
+        if (values["is_permanent_equals_present"] and 
+            values["present_address"] is not None):
+
+                values["present_address"] = None
+
+
+        if (not values["is_permanent_equals_present"] and 
+
+            not values["present_address"]):
+
+                raise ValueError("present address should be present when permanent address and present address are not same")
+        
+
+        return values
 
 
 class StudentCompanyInfoSchema(BaseModel):
