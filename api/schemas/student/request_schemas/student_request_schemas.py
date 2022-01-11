@@ -150,10 +150,9 @@ class StudentAddressInfoSchema(BaseModel):
         return values
 
 
-class StudentCompanyInfoSchema(BaseModel):
-    student_id: str
-    current_company: str 
-    current_role: str
+class NotificationInfoSchema(BaseModel):
+    notification_header: str
+    notification_body: str
 
 
 class StudentCompanyLetterInfoSchema(BaseModel):
@@ -161,24 +160,23 @@ class StudentCompanyLetterInfoSchema(BaseModel):
     company_name: str
     letter_type: str
     letter_link: str
-    is_verified: bool = False
 
 class StudentCertificationInfoSchema(BaseModel):
     student_id: str
     course_name: str
     certificate_link: str
-    is_verified: bool = False
 
 class StudentScoreCardInfoSchema(BaseModel):
     student_id: str
     exam_name: str
     scorecard_link: str
-    is_verified: bool = False
 
-class StudentInternshipInfoSchema(BaseModel):
+class StudentJobExperienceInfoSchema(BaseModel):
     student_id: str
     company_name: str
-    internship_role: str
+    employment_type: str
+    role: str
+    is_current_company: bool = False
     start_date: datetime.date
     end_date: datetime.date
 

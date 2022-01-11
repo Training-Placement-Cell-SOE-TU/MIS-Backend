@@ -2,9 +2,10 @@ from os import environ
 
 import jwt
 from fastapi import Request
+from fastapi.responses import JSONResponse
 
 
-def is_authorized(request: Request):
+def is_authenticated(request: Request):
 
     token = request.headers.get("Authorization", None)
     
@@ -19,8 +20,11 @@ def is_authorized(request: Request):
                         algorithms=[environ.get("JWT_ALGORITHM")]
                     )
             
-            return payload["token"]
+            return {"flag": True, "token": payload["token"]}
         
         except jwt.ExpiredSignatureError:
 
-            return False
+            return {"flag": False, "message": "token expired"}
+
+
+    return {"flag": False, "message": "Authorization Header not present"}
