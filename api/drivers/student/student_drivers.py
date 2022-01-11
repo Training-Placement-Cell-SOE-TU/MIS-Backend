@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Dict, final
 
 import pydantic
-from api.models.student.student_model import StudentModel
+from api.models.student.student_model import *
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
+from api.utils.model_mappings import model_mappings
 from passlib.hash import pbkdf2_sha256
 from pymongo.errors import DuplicateKeyError
 
@@ -41,8 +42,7 @@ class Student:
             raise exceptions.UnexpectedError()
 
 
-    async def update_general_info(self, 
-        info: pydantic.BaseModel):
+    async def update_general_info(self, info):
 
         """Updates students data for general field"""
 
@@ -74,9 +74,45 @@ class Student:
             raise exceptions.UnexpectedError()
 
 
-    @abstractmethod
-    def get_student():
-        pass
+    async def update_array_of_dict(self, info):
+
+        try:
+            student = await StudentModel.find_one(
+                    StudentModel.student_id == info["student_id"]
+                )
+            
+            info_type = info["type"]
+
+            # Gets model corresponding to field type
+            model = model_mappings[info_type]
+
+            # Initiates model with incoming data for auto-generating of index fields
+            data_to_append = model(**info["content"])
+
+            # Gets current data of field to update
+            field_data = getattr(student, info_type)
+
+            # Appends incoming data to fetched field data
+            field_data = original_data.append(**data_to_append)
+
+            # Updates class with appended field data
+            setattr(student, info_type, field_data)
+
+
+            db_response = await StudentModel.save(student)
+
+            return True
+
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
 
     @abstractmethod
     def ban_student():
