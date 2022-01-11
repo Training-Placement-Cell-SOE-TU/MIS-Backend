@@ -14,7 +14,8 @@ class RegisterStudentSchema(BaseModel):
     email: EmailStr
     phone: str
     password: str
-
+    
+    
     @validator('batch', always=True)
     def check_batch_le_current_year(cls, value):
         """Batch should not be greater than current year + 4"""
