@@ -10,23 +10,28 @@ from pydantic import BaseModel, EmailStr, Field
 class CompanyLetterModel(BaseModel):
     """Company Letters Model"""
 
+    letter_id: Indexed(str, unique=True) = str(uuid4())
     company_name: str
     letter_type: str
     letter_link: str
     is_verified: bool = False
 
 
-class InternshipModel(BaseModel):
-    """Internship Model"""
+class JobExperienceModel(BaseModel):
+    """Job Experience Model"""
 
+    exp_id: Indexed(str, unique=True) = str(uuid4())
     company_name: str
-    internship_role: str
+    employment_type: str
+    role: str
+    is_current_company: bool = False
     start_date: datetime.date
     end_date: datetime.date
 
 class CertificationModel(BaseModel):
     """Certifications Model"""
 
+    course_id: Indexed(str, unique=True) = str(uuid4())
     course_name: str
     certificate_link: str
     is_verified: bool = False
@@ -35,6 +40,7 @@ class CertificationModel(BaseModel):
 class ScorecardModel(BaseModel):
     """Scorecard Model"""
 
+    exam_id: Indexed(str, unique=True) = str(uuid4())
     exam_name: str
     scorecard_link: str
     is_verified: bool = False
@@ -43,6 +49,7 @@ class ScorecardModel(BaseModel):
 class SocialModel(BaseModel):
     """Social Media Platform Model"""
 
+    platform_id: Indexed(str, unique=True) = str(uuid4())
     platform_name: str
     profile_link: str
 
@@ -55,6 +62,15 @@ class AddressModel(BaseModel):
     country: str = ''
     address_line_1: str = ''
     address_line_2: Optional[str] = None
+
+
+class NotificationModel(BaseModel):
+    """Notification Model"""
+
+    notification_id: Indexed(str, unique=True) = str(uuid4())
+    notification_header: str
+    notification_body: str
+    datetime = datetime.datetime.now()
 
 
 class PydanticObjectId(BsonObjectId):
@@ -76,7 +92,7 @@ class StudentModel(Document):
     is_account_active: bool = False
     is_banned: bool = False
     token: Optional[str] = ''
-    student_id: str = str(uuid4())
+    student_id: Indexed(str, unique=True) = str(uuid4())
     
     # Personal info 
     fname: str
@@ -112,27 +128,25 @@ class StudentModel(Document):
     present_address: Optional[AddressModel] = None
     
     # Application info
-    applications: Optional[List[PydanticObjectId]] = []
-    
-    # Company info
-    current_company: Optional[str] = None 
-    current_role: Optional[str] = None 
+    applied_positions: Optional[List[PydanticObjectId]] = []
     
     # Company Letters info
-    company_letters: Optional[List[CompanyLetterModel]] = None
+    company_letters: Optional[List[CompanyLetterModel]] = []
     
-    # Internship info
-    internship: List[InternshipModel] = []
+    # Job experience info
+    job_experience: List[JobExperienceModel] = []
     
     # Certification info
-    certifications: Optional[List[CertificationModel]] = None
+    certifications: Optional[List[CertificationModel]] = []
     
     # Score card info
-    score_cards: Optional[List[ScorecardModel]] = None
+    score_cards: Optional[List[ScorecardModel]] = []
     
-    #Social info
-    social_links: Optional[List[SocialModel]] = None
+    # Social info
+    social_links: Optional[List[SocialModel]] = []
 
+    # Notifications
+    notifications: Optional[NotificationModel] = []
 
 
     class Config:
