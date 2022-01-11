@@ -130,7 +130,9 @@ def construct_router():
             "content" : data
         }
 
-        response = await student_repo.add_to_array_of_dict(data, authorization)
+        response = await student_repo.add_to_array_of_dict(
+            data, authorization
+        )
         print(response)
         return response
 
