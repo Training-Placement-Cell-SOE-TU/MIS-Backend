@@ -1,10 +1,9 @@
 import datetime
 from typing import Dict, List, Optional
 from uuid import uuid4
-
+from ..general_use_models import PydanticObjectId
 from beanie import Document, Indexed
-from bson.objectid import ObjectId as BsonObjectId
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, AnyHttpUrl
 
 
 class CompanyLetterModel(BaseModel):
@@ -51,7 +50,7 @@ class SocialModel(BaseModel):
 
     platform_id: Indexed(str, unique=True) = str(uuid4())
     platform_name: str
-    profile_link: str
+    profile_link: AnyHttpUrl
 
 class AddressModel(BaseModel):
     """Address Model"""
@@ -62,27 +61,6 @@ class AddressModel(BaseModel):
     country: str = ''
     address_line_1: str = ''
     address_line_2: Optional[str] = None
-
-
-class NotificationModel(BaseModel):
-    """Notification Model"""
-
-    notification_id: Indexed(str, unique=True) = str(uuid4())
-    notification_header: str
-    notification_body: str
-    datetime = datetime.datetime.now()
-
-
-class PydanticObjectId(BsonObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not isinstance(v, BsonObjectId):
-            raise TypeError('ObjectId required')
-        return str(v)
 
 
 class StudentModel(Document):
@@ -144,9 +122,6 @@ class StudentModel(Document):
     
     # Social info
     social_links: Optional[List[SocialModel]] = []
-
-    # Notifications
-    notifications: Optional[NotificationModel] = []
 
 
     class Config:

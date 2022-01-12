@@ -118,7 +118,6 @@ def construct_router():
         """Handles company letter addition to student's profile"""
 
         student_id = request.student_id
-        print(student_id)
 
         data = request.__dict__
 
@@ -133,7 +132,31 @@ def construct_router():
         response = await student_repo.add_to_array_of_dict(
             data, authorization
         )
-        print(response)
+        return response
+
+    @student.post("/add/social", status_code=status.HTTP_200_OK)
+    async def add_company_letters(
+            request: student_request_schemas.StudentSocialInfoSchema,
+            authorization = Depends(authentication_middleware.is_authenticated)
+        ):
+        
+        """Handles social profile addition to student's profile"""
+
+        student_id = request.student_id
+
+        data = request.__dict__
+
+        del data["student_id"]
+
+        data = {
+            "type" : "social_links",
+            "student_id" : student_id,
+            "content" : data
+        }
+
+        response = await student_repo.add_to_array_of_dict(
+            data, authorization
+        )
         return response
 
 
