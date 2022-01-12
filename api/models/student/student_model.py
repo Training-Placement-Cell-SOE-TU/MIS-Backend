@@ -26,7 +26,7 @@ class JobExperienceModel(BaseModel):
     role: str
     is_current_company: bool = False
     start_date: datetime.date
-    end_date: datetime.date
+    end_date: Optional[datetime.date] = None
 
 class CertificationModel(BaseModel):
     """Certifications Model"""
