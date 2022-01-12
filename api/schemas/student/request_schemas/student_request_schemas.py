@@ -1,7 +1,7 @@
 import datetime
 from typing import List, Optional
 import pprint
-from pydantic import BaseModel, EmailStr, validator, root_validator
+from pydantic import BaseModel, EmailStr, validator, root_validator, AnyHttpUrl
 import requests
 
 
