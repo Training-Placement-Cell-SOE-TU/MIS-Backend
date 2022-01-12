@@ -1,7 +1,7 @@
 import datetime
 from typing import List, Optional
 import pprint
-from pydantic import BaseModel, EmailStr, validator, root_validator
+from pydantic import BaseModel, EmailStr, validator, root_validator, AnyHttpUrl
 
 
 class RegisterStudentSchema(BaseModel):
@@ -183,4 +183,4 @@ class StudentJobExperienceInfoSchema(BaseModel):
 class StudentSocialInfoSchema(BaseModel):
     student_id: str
     platform_name: str
-    profile_link: str
+    profile_link: AnyHttpUrl

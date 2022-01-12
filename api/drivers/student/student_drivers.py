@@ -78,8 +78,8 @@ class Student:
 
         try:
             student = await StudentModel.find_one(
-                    StudentModel.student_id == info["student_id"]
-                )
+                StudentModel.student_id == info["student_id"]
+            )
             
             info_type = info["type"]
 
@@ -89,15 +89,16 @@ class Student:
             # Initiates model with incoming data for auto-generating of index fields
             data_to_append = model(**info["content"])
 
+            data_to_append = data_to_append.__dict__
+
             # Gets current data of field to update
             field_data = getattr(student, info_type)
 
             # Appends incoming data to fetched field data
-            field_data = original_data.append(**data_to_append)
+            field_data.append(data_to_append)
 
             # Updates class with appended field data
             setattr(student, info_type, field_data)
-
 
             db_response = await StudentModel.save(student)
 
