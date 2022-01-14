@@ -63,11 +63,23 @@ async def update_student(request, authorization):
 
 
 
-async def add_to_array_of_dict(request, authorization):
+async def add_to_array_of_dict(request, authorization, model_type):
     """Adds new company letter to authorized student's profile"""
-   
+    
+    student_id = request.student_id
+
+    data = request.__dict__
+
+    del data["student_id"]
+
+    data = {
+        "type" : model_type,
+        "student_id" : student_id,
+        "content" : data
+    }
+
     response = await update_handler(
-        request, 
+        data, 
         authorization, 
         student_drivers.Student().update_array_of_dict
     )

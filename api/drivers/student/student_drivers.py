@@ -115,9 +115,42 @@ class Student:
             print(f"{e} excep err : student driver")
             raise exceptions.UnexpectedError()
 
-    @abstractmethod
-    def ban_student():
-        pass
+    
+
+    async def delete_from_array_of_dict(self, info: dict):
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+            
+            field_type = info["model_type"]
+
+            # Gets current data of input field to delete 
+            field_data = getattr(student, field_type)
+
+            # Deletes the specified data
+            for i in len(field_data):
+                if field_data[i]["uid"] == info["uid"]:
+                    del field_data[i]
+                    break
+
+            # Updates class with appended field data
+            setattr(student, field_type, field_data)
+
+            db_response = await StudentModel.save(student)
+
+            return True
+
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
 
     @abstractmethod
     def delete_student():

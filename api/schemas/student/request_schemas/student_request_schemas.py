@@ -1,8 +1,9 @@
 import datetime
-from typing import List, Optional
 import pprint
-from pydantic import BaseModel, EmailStr, validator, root_validator, AnyHttpUrl
+from typing import List, Optional
+
 import requests
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, root_validator, validator
 
 
 class RegisterStudentSchema(BaseModel):
@@ -188,8 +189,6 @@ class StudentCertificationInfoSchema(BaseModel):
     certificate_link: str
 
 
-
-
 class StudentScoreCardInfoSchema(BaseModel):
     student_id: str
     exam_name: str
@@ -299,7 +298,7 @@ class StudentJobExperienceInfoSchema(BaseModel):
 class StudentSocialInfoSchema(BaseModel):
     student_id: str
     platform_name: str
-    profile_link: str
+    profile_link: AnyHttpUrl
 
     @validator('profile_link',always=True)
     def validate_platform(cls, value):
@@ -309,19 +308,30 @@ class StudentSocialInfoSchema(BaseModel):
                 -> The domain name of the platform link should not be from the 
                     listed out social media platforms
         """
-        blacklist_platforms = [
-            'instagram', 'snapchat', 'discord', 'tiktok', 'sharechat', 't.me',
-            'pinterest', 'reddit', 'facebook', 'tinder', 'mxtakatak'
-        ]
 
-        domain_by_dot = value.split('.')[1]
-        if domain_by_dot.lower() in blacklist_platforms:
+        #TODO: Check same platform should not be entered twice 
+        #TODO: Optimise the code, failing on testcases
+
+        try:
+            blacklist_platforms = [
+                'instagram', 'snapchat', 'discord', 'tiktok', 'sharechat', 't.me',
+                'pinterest', 'reddit', 'facebook', 'tinder', 'mxtakatak'
+            ]
+
+            domain_by_dot = value.split('.')[1]
+
+            if domain_by_dot.lower() in blacklist_platforms:
+                raise ValueError(f"{value} platform is not accepted")
+
+
+            domain_by_slash = value.split('//')[1].split('.')[0]
+
+            if domain_by_slash.lower() in blacklist_platforms:
+                raise ValueError(f"{value} platform is not accepted")
+
+        except Exception as e:
             raise ValueError(f"{value} platform is not accepted")
-        
-        domain_by_slash = value.split('//')[1].split('.')[0]
 
-        if domain_by_slash.lower() in blacklist_platforms:
-            raise ValueError(f"{value} platform is not accepted")
-
-        return value
+        finally:
+            return value
 

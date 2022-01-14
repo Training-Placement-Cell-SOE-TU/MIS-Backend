@@ -1,13 +1,15 @@
 import asyncio
-from os import environ, path
 from datetime import datetime
+from os import environ, path
+
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from pymongo import errors
 
 from api.config.database import database
 from api.routes.admin import admin_routes
-from api.routes.student import student_routes
+from api.routes.student import (student_add_routes, student_general_routes,
+                                student_update_routes)
 
 BASE_DIR = path.abspath(path.dirname(__file__))
 
@@ -64,7 +66,17 @@ def create_app():
 
     # Register all the routers
     app.include_router(
-        student_routes.construct_router(),
+        student_general_routes.construct_router(),
+        prefix = "/student"
+    )
+
+    app.include_router(
+        student_add_routes.construct_router(),
+        prefix = "/student"
+    )
+
+    app.include_router(
+        student_update_routes.construct_router(),
         prefix = "/student"
     )
 
