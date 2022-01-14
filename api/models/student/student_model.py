@@ -24,10 +24,10 @@ class JobExperienceModel(BaseModel):
     employment_type: str
     role: str
     is_current_company: bool = False
-    start_month: str
-    start_year: str
-    end_month: Optional[str] = None
-    end_year: Optional[str] = None
+    start_month: int
+    start_year: int
+    end_month: Optional[int] = None
+    end_year: Optional[int] = None
 
 class CertificationModel(BaseModel):
     """Certifications Model"""

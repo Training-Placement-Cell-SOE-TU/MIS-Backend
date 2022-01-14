@@ -201,8 +201,10 @@ class StudentJobExperienceInfoSchema(BaseModel):
     employment_type: str
     role: str
     is_current_company: bool = False
-    start_date: datetime.date
-    end_date: Optional[datetime.date] = None
+    start_month: int
+    start_year: int
+    end_month: Optional[int] = None
+    end_year: Optional[int] = None
 
     @validator('company_name',always=True)
     def validate_company_name(cls, value):
@@ -266,31 +268,35 @@ class StudentJobExperienceInfoSchema(BaseModel):
                 -> start date have to be before end date
                 -> end date have to be before current date
         """
+        curr_date = datetime.date.today()
 
-        if values["end_date"] is None and not values["is_current_company"]:
-            raise ValueError("End date is required")
+        if values["start_month"] is None or values["start_year"] is None:
+            raise ValueError("start month and start year are required fields")
 
-        # TODO: Optimise the code block
-        # if values["end_date"] is not None:
-        #     last_date = values["end_date"].split("/")
-        #     start_date = values["start_date"].split("/")
+        if values["start_month"] > 12 or values["start_month"] < 1:
+            raise ValueError("start month have to be between 1 and 12")
 
-        #     end_month, end_year = int(last_date[0]), int(last_date[1])
-        #     start_month, start_year = int(start_date[0]), int(start_date[1])
+        if values["is_current_company"] :
+            values["end_month"] = None
+            values["end_year"] = None
 
-        #     curr_date = datetime.date.today()
+        if values["start_month"] > curr_date.month and values["start_year"] >= curr_date.year :
+                raise ValueError("start date should not be after current date")
 
-        #     if end_year > curr_date.year and end_month > 12:
-        #         values["end_date"] = None
+        if not values["is_current_company"]:
 
-        #     if end_year == curr_date.year and end_month > curr_date.month:
-        #         values["end_date"] = None
+            if values["end_month"] is None or values["end_year"] is None:
+                raise ValueError("end month and end year are required fields")
 
-        #     if start_year > end_year:
-        #         raise ValueError("Start date has to be before end date")
-            
-        #     if start_year==end_year and start_month>end_month:
-        #         raise ValueError("Start date has to be before end date")
+        
+            if values["end_month"] > 12 or values["end_month"] < 1:
+                raise ValueError("end month have to be between 1 and 12")
+
+            if values["end_month"] > curr_date.month and values["end_year"] >= curr_date.year :
+                raise ValueError("end date should not be after current date")
+
+            if values["start_month"] > values["end_month"] and values["start_year"] >= values["end_year"] :
+                raise ValueError("start date should not be after end date")
 
         return values
 
@@ -319,21 +325,21 @@ class StudentSocialInfoSchema(BaseModel):
             ]
 
             domain_by_dot = value.split('.')[1]
+            print(domain_by_dot)
 
             if domain_by_dot.lower() in blacklist_platforms:
                 raise ValueError(f"{value} platform is not accepted")
 
 
             domain_by_slash = value.split('//')[1].split('.')[0]
-
+            print(domain_by_slash)
             if domain_by_slash.lower() in blacklist_platforms:
                 raise ValueError(f"{value} platform is not accepted")
 
+            return value
+            
         except Exception as e:
             raise ValueError(f"{value} platform is not accepted")
-
-        finally:
-            return value
 
 
 class DeleteStudentArrayOfListSchema(BaseModel):
