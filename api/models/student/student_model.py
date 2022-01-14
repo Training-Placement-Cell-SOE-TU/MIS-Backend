@@ -9,7 +9,7 @@ from pydantic import BaseModel, EmailStr, Field, AnyHttpUrl
 class CompanyLetterModel(BaseModel):
     """Company Letters Model"""
 
-    letter_id: Indexed(str, unique=True) = str(uuid4())
+    uid: Indexed(str, unique=True) = str(uuid4())
     company_name: str
     letter_type: str
     letter_link: str
@@ -19,7 +19,7 @@ class CompanyLetterModel(BaseModel):
 class JobExperienceModel(BaseModel):
     """Job Experience Model"""
 
-    exp_id: Indexed(str, unique=True) = str(uuid4())
+    uid: Indexed(str, unique=True) = str(uuid4())
     company_name: str
     employment_type: str
     role: str
@@ -30,7 +30,7 @@ class JobExperienceModel(BaseModel):
 class CertificationModel(BaseModel):
     """Certifications Model"""
 
-    course_id: Indexed(str, unique=True) = str(uuid4())
+    uid: Indexed(str, unique=True) = str(uuid4())
     course_name: str
     certificate_link: str
     is_verified: bool = False
@@ -39,7 +39,7 @@ class CertificationModel(BaseModel):
 class ScorecardModel(BaseModel):
     """Scorecard Model"""
 
-    exam_id: Indexed(str, unique=True) = str(uuid4())
+    uid: Indexed(str, unique=True) = str(uuid4())
     exam_name: str
     scorecard_link: str
     is_verified: bool = False
@@ -48,7 +48,7 @@ class ScorecardModel(BaseModel):
 class SocialModel(BaseModel):
     """Social Media Platform Model"""
 
-    platform_id: Indexed(str, unique=True) = str(uuid4())
+    uid: Indexed(str, unique=True) = str(uuid4())
     platform_name: str
     profile_link: AnyHttpUrl
 
