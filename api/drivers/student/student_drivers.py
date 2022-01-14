@@ -129,9 +129,9 @@ class Student:
             field_data = getattr(student, field_type)
 
             # Deletes the specified data
-            for i in len(field_data):
-                if field_data[i]["uid"] == info["uid"]:
-                    del field_data[i]
+            for i in field_data:
+                if i.uid == info["uid"]:
+                    field_data.remove(i)
                     break
 
             # Updates class with appended field data

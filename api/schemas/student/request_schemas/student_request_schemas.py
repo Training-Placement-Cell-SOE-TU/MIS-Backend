@@ -335,3 +335,26 @@ class StudentSocialInfoSchema(BaseModel):
         finally:
             return value
 
+
+class DeleteStudentArrayOfListSchema(BaseModel):
+    student_id: str
+    model_type: str
+    uid: str
+
+    @validator('model_type', always=True)
+    def validate_model_type(cls, value):
+        #TODO: Add descriptive doc string
+
+        model_type = [
+            "company_letters",
+            "job_experience",
+            "certifications",
+            "score_cards",
+            "social_links",
+            "notifications",
+        ]
+
+        if value not in model_type:
+            raise ValueError(f"model_type {value} is not a valid value, choose from {model_type}")
+        
+        return value
