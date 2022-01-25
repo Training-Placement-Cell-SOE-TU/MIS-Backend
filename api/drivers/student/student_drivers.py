@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+from operator import truediv
+from pickle import DICT
 from typing import Dict, final
+from uuid import uuid4
 
 import pydantic
 from api.models.student.student_model import *
@@ -11,7 +14,8 @@ from pymongo.errors import DuplicateKeyError
 
 
 class Student:
-    """Student database driver.
+    """
+        Student database driver.
         Responsible for various student related
         tasks.
     """
@@ -24,7 +28,7 @@ class Student:
         try:
 
             student = StudentModel(**student_details.__dict__)
-            
+        
             student.password = pbkdf2_sha256.hash(student.password)
 
             db_response = await StudentModel.save(student)
@@ -51,6 +55,9 @@ class Student:
             student = await StudentModel.find_one(
                 StudentModel.student_id == info.student_id
             )
+
+            if student is None:
+                return False
 
             info = info.__dict__
 
@@ -80,7 +87,10 @@ class Student:
             student = await StudentModel.find_one(
                 StudentModel.student_id == info["student_id"]
             )
-            
+
+            if student is None:
+                return False
+
             info_type = info["type"]
 
             # Gets model corresponding to field type
@@ -122,7 +132,10 @@ class Student:
             student = await StudentModel.find_one(
                 StudentModel.student_id == info["student_id"]
             )
-            
+
+            if student is None:
+                return False
+
             field_type = info["model_type"]
 
             # Gets current data of input field to delete 
@@ -152,7 +165,62 @@ class Student:
             print(f"{e} excep err : student driver")
             raise exceptions.UnexpectedError()
 
-    @abstractmethod
-    def delete_student():
-        pass
+
+    async def update_array_of_str(self, info: Dict):
+        #TODO : add a suitable doc string
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+            if student is None:
+                return False
+            del info["student_id"]
+
+
+            key , value = list(info.items())[0]
+            field_name = getattr(student, key)
+            field_name.extend(value)
+            setattr(student, key, field_name)
+            db_response = await StudentModel.save(student)
+            
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
+    async def update_password(self, info: Dict):
+        #TODO : add a suitable doc string
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+            if student is None:
+                return False
+
+            del info["student_id"]
+
+
+            student.password = pbkdf2_sha256.hash(str(info["password"]))
+            student.student_id = str(uuid4())
+            db_response = await StudentModel.save(student)
+            
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
 

@@ -73,6 +73,7 @@ class StudentModel(Document):
     is_banned: bool = False
     token: Optional[str] = ''
     student_id: Indexed(str, unique=True) = str(uuid4())
+    events: Optional[List[str]] = []
     
     # Personal info 
     fname: str
@@ -100,7 +101,7 @@ class StudentModel(Document):
     cgpa: Optional[float] = None 
 
     # Skills info
-    skills: List[str] = [] 
+    skills: List[PydanticObjectId] = [] 
     
     # Address info
     permanent_address: Optional[AddressModel] = {}
@@ -124,6 +125,7 @@ class StudentModel(Document):
     
     # Social info
     social_links: Optional[List[SocialModel]] = []
+
 
 
     class Config:
