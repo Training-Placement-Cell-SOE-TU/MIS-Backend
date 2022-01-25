@@ -62,8 +62,8 @@ def construct_router():
     
     @student.put("/update/address", status_code=status.HTTP_200_OK)
     async def update_address_info(
-            request: student_request_schemas.StudentAddressInfoSchema,
-            authorization = Depends(authentication_middleware.is_authenticated)
+        request: student_request_schemas.StudentAddressInfoSchema,
+        authorization = Depends(authentication_middleware.is_authenticated)
         ):
 
         """Student address info update route"""
@@ -73,5 +73,56 @@ def construct_router():
         )
         return response
 
+
+    @student.patch("/update/skills", status_code=status.HTTP_200_OK)
+    async def update_student_skills(
+        request : student_request_schemas.UpdateStudentSkillsSchema,
+        authorization = Depends(authentication_middleware.is_authenticated)
+    ):
+        """Student skills info update route"""
+
+        try:
+            response = await student_drivers.Student().update_array_of_str(request.__dict__)
+
+            if response:
+                return JSONResponse(
+                    status_code = status.HTTP_200_OK,
+                    content={"message" : "skills updated successfully"}
+                )
+
+        except Exception as e:
+            #TODO: log to logger
+            return JSONResponse(
+                status_code = status.HTTP_304_NOT_MODIFIED,
+                content={"message" : "skills cannot be updated successfully"}
+            )
+    
+
+
+    @student.patch("/update/password", status_code=status.HTTP_200_OK)
+    async def update_student_password(
+        request : student_request_schemas.UpdateStudentPasswordSchema
+    ):
+        try:
+            response = await student_drivers.Student().update_password(request.__dict__)
+
+            if response:
+                return JSONResponse(
+                    status_code = status.HTTP_200_OK,
+                    content={"message" : "password updated successfully"}
+                )
+
+            return JSONResponse(
+                status_code = status.HTTP_404_NOT_FOUND,
+                content={"message" : "student does not exist"}
+            )
+
+        except Exception as e:
+            #TODO: log to logger
+            return JSONResponse(
+                status_code = status.HTTP_304_NOT_MODIFIED,
+                content={"message" : "password cannot be updated successfully"}
+            )
+        
     
     return student

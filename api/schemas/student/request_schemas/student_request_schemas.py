@@ -364,3 +364,27 @@ class DeleteStudentArrayOfListSchema(BaseModel):
             raise ValueError(f"model_type {value} is not a valid value, choose from {model_type}")
         
         return value
+
+class UpdateStudentSkillsSchema(BaseModel):
+
+    student_id : str
+    skills : List[str]
+
+    @validator("skills")
+    def validate_events(value):
+    #TODO : add suitable doc string
+
+        if len(value) == 0 :
+            raise ValueError("skills list should never be empty")
+
+        return value
+
+
+class UpdateStudentPasswordSchema(BaseModel):
+    student_id : str
+    password : str
+
+    @validator("password")
+    def validate_password(value):
+        #TODO : write a suitable password validator
+        pass
