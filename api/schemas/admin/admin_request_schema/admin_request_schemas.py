@@ -2,7 +2,7 @@ from asyncio import events
 from typing import Dict, List
 from pydantic import BaseModel, validator
 
-class AddStudentSubscriptionSchema(BaseModel):
+class ManipulateStudentSubscriptionSchema(BaseModel):
     student_id : str
     events : List[str]
 
