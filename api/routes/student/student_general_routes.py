@@ -89,6 +89,17 @@ def construct_router():
             )
 
     
+    @student.post("/activate")
+    async def activate_student_account(
+        request: Request,
+        authorization = Depends(authentication_middleware.is_authenticated)
+    ):
+        request = await request.json()
+
+        response = await student_repo.verify_student_handler(request, authorization)
+
+        return response
+
 
 
     return student

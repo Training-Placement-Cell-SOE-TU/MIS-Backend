@@ -101,7 +101,7 @@ class StudentModel(Document):
     cgpa: Optional[float] = None 
 
     # Skills info
-    skills: List[PydanticObjectId] = [] 
+    skills: List[str] = [] 
     
     # Address info
     permanent_address: Optional[AddressModel] = {}

@@ -97,3 +97,41 @@ async def delete_to_array_of_dict(request, authorization):
 
     return response
 
+
+async def verify_student_handler(request, authorization):
+    try:
+        if not authorization["flag"]:
+            raise exceptions.AuthenticationError()
+
+        
+        request = {
+            "otp" : request["otp"],
+            "student_id" : authorization["token"]
+        }
+
+        response = await student_drivers.Student().verify_student(request)
+
+        if response:
+            return JSONResponse(
+                status_code = 200, 
+                content={"message" : "student account activated"}
+            )
+
+        elif response == "wrong_otp":
+            return JSONResponse(
+                status_code = 404, 
+                content={"message" : "wrong otp"}
+            )
+
+        else:
+            return JSONResponse(
+                status_code = 500, 
+                content={"message" : "internal server error"}
+            )
+
+    except exceptions.AuthenticationError as e:
+
+        return JSONResponse(status_code=403, 
+            content={"message" : authorization["message"]})
+
+    

@@ -386,5 +386,32 @@ class UpdateStudentPasswordSchema(BaseModel):
 
     @validator("password")
     def validate_password(value):
-        #TODO : write a suitable password validator
-        pass
+        lower, upper, special, decimal = 0, 0, 0, 0
+        
+        if (len(value) >= 8):
+            for password in value:
+        
+                # counting lowercase alphabets 
+                if (password.islower()):
+                    lower+=1            
+        
+                # counting uppercase alphabets
+                if (password.isupper()):
+                    upper+=1            
+        
+                # counting digits
+                if (password.isdigit()):
+                    decimal+=1            
+        
+                # counting the mentioned special characters
+                if(password=='@'or password=='$' or password=='_' or password=='#' or password=='&' or
+                    password=='*' or password=='%'):
+                    special+=1           
+        if (lower>=1 and upper>=1 and special>=1 and decimal>=1 and lower+special+upper+decimal==len(value)):
+            print("Valid Password")
+        else:
+            print("Invalid Password")
+
+        
+
+        

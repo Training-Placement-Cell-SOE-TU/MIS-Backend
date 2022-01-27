@@ -1,12 +1,10 @@
-from abc import ABC, abstractmethod
-from operator import truediv
-from pickle import DICT
 from typing import Dict, final
 from uuid import uuid4
 
-import pydantic
 from api.models.student.student_model import *
+from api.repository import student_repo
 from api.schemas.student.request_schemas import student_request_schemas
+from api.utils import otp_generator
 from api.utils.exceptions import exceptions
 from api.utils.model_mappings import model_mappings
 from passlib.hash import pbkdf2_sha256
@@ -196,6 +194,49 @@ class Student:
             raise exceptions.UnexpectedError()
 
 
+    async def delete_from_array_of_str(self, info: Dict):
+        #TODO: add a suitable doc string
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+
+            if student is None:
+                return False
+
+            del info["student_id"]
+
+
+            key , value = list(info.items())[0]
+
+            field_name = getattr(student, key)
+            
+            counter = 0
+
+            for val in value:
+                if val in field_name:
+                    field_name.remove(val)
+                else:
+                    counter += 1
+            
+            if counter == len(value):
+                return False
+
+            setattr(student, key, field_name)
+            db_response = await StudentModel.save(student)
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
     async def update_password(self, info: Dict):
         #TODO : add a suitable doc string
         try:
@@ -223,4 +264,123 @@ class Student:
             #TODO: log to logger
             print(f"{e} excep err : student driver")
             raise exceptions.UnexpectedError()
+
+
+    async def add_token(self, info: str):
+        #TODO : add a suitable doc string
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info
+            )
+
+            if student is None:
+                return False
+
+            student.token = str(otp_generator.otp_generator(6))
+            db_response = await StudentModel.save(student)
+            
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
+    async def verify_student(self, info: Dict):
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+
+            if student is None:
+                return False
+
+            if student.token == info["otp"]:
+                student.is_account_active = True
+                student.token = ""
+            else:
+                return "wrong_otp"
+            
+
+
+            db_response = await StudentModel.save(student)
+
+            if db_response:
+                return True
+
+            return False
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
+    async def ban_student(self, student_id: str):
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == student_id
+            )
+
+            if student is None:
+                return False
+
+            if not student.is_account_active:
+                print("alerady_banned")
+                return "already_banned"
+
+            student.is_account_active = False
+
+            db_response = await StudentModel.save(student)
+
+            if db_response:
+                    return True
+
+            return False
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
+
+    async def delete_student(self, student_id: str):
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == student_id
+            )
+
+            if student is None:
+                return False
+
+            await student.delete()
+
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
 
