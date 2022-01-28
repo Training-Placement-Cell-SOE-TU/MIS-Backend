@@ -1,14 +1,13 @@
-from typing import Dict, final
+from typing import Dict
 from uuid import uuid4
 
+from api.models.student.skill_model import SkillsModel
 from api.models.student.student_model import *
-from api.repository import student_repo
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils import otp_generator
 from api.utils.exceptions import exceptions
 from api.utils.logger import Logger
 from api.utils.model_mappings import model_mappings
-from bson.dbref import DBRef
 from bson.objectid import ObjectId
 from passlib.hash import pbkdf2_sha256
 from pymongo.errors import DuplicateKeyError
@@ -408,8 +407,9 @@ class Student:
         for value in values:
 
             # If value is not already present then execute
+            value = ObjectId(value)
             if value not in field_value:
-                field_value.append(ObjectId(value))
+                field_value.append(value)
             else:
                 counter += 1
         
@@ -430,3 +430,30 @@ class Student:
         return False
 
 
+    async def get_student_profile(self, roll_no: str):
+        #TODO: add suitable doc string and exception handling
+        student = await StudentModel.find_one(
+            StudentModel.roll_no == roll_no
+        )
+
+        if student is None:
+            return False
+        
+        if len(student.skills) == 0:
+            return student.__dict__
+
+        skill_names = []
+
+        for val in student.skills:
+            skill = await SkillsModel.find_one(
+                {"_id" : val}
+            )
+
+            if skill is not None:
+                skill_names.append(skill.skill_name)
+
+        student.skills = skill_names        
+
+        return student.__dict__
+
+        

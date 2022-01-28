@@ -47,15 +47,6 @@ def construct_router():
             return JSONResponse(status_code=500, content = {"message" : "internal server error"})
 
 
-    @student.get("/{roll_no}", status_code=status.HTTP_200_OK)
-    async def get_student_by_roll(roll_no: str):
-        return roll_no
-
-    @student.get("/", status_code=status.HTTP_200_OK)
-    async def get_student():
-        pass
-
-
     @student.post("/add")
     async def add_student(request: student_request_schemas.RegisterStudentSchema):
         #TODO: Optimise and clean the code

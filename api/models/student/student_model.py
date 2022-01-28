@@ -1,10 +1,13 @@
 import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
-from ..general_use_models import PydanticObjectId
+
 from beanie import Document, Indexed
-from pydantic import BaseModel, EmailStr, Field, AnyHttpUrl
-from bson import ObjectId
+from bson.objectid import ObjectId
+from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
+
+from ..general_use_models import PydanticObjectId
+
 
 class CompanyLetterModel(BaseModel):
     """Company Letters Model"""
@@ -69,6 +72,7 @@ class StudentModel(Document):
     """Maps student model to database document. """
 
     # Extra functionality use fields
+    refresh_token: str = ''
     is_account_active: bool = False
     is_banned: bool = False
     token: Optional[str] = ''
@@ -101,7 +105,7 @@ class StudentModel(Document):
     cgpa: Optional[float] = None 
 
     # Skills info
-    skills: List[PydanticObjectId] = [] 
+    skills: List[Any] = [] 
     
     # Address info
     permanent_address: Optional[AddressModel] = {}
@@ -127,10 +131,8 @@ class StudentModel(Document):
     social_links: Optional[List[SocialModel]] = []
 
 
-
     class Config:
         anystr_lower = True
-        
 
     class Collection:
         name = "student"

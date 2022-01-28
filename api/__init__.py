@@ -8,8 +8,9 @@ from pymongo import errors
 
 from api.config.database import database
 from api.routes.admin import admin_routes
-from api.routes.student import (student_add_routes, student_general_routes,
-                                student_update_routes, student_delete_routes)
+from api.routes.student import (student_add_routes, student_delete_routes,
+                                student_general_routes, student_get_routes,
+                                student_update_routes)
 
 BASE_DIR = path.abspath(path.dirname(__file__))
 
@@ -67,6 +68,11 @@ def create_app():
     # Register all the routers
     app.include_router(
         student_general_routes.construct_router(),
+        prefix = "/student"
+    )
+
+    app.include_router(
+        student_get_routes.construct_router(),
         prefix = "/student"
     )
 
