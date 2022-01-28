@@ -9,6 +9,7 @@ from api.models.student import student_model
 from api.repository import student_repo
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
+from api.utils.logger import Logger
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 
@@ -82,18 +83,19 @@ def construct_router():
         """Student skills info update route"""
 
         try:
-            response = await student_drivers.Student().update_array_of_str(request.__dict__)
+            response = await student_repo.update_array_of_refs_handler(
+                request.__dict__,
+                authorization
+            )
 
-            if response:
-                return JSONResponse(
-                    status_code = status.HTTP_200_OK,
-                    content={"message" : "skills updated successfully"}
-                )
+            return response
 
         except Exception as e:
-            #TODO: log to logger
+            
+            Logger.error(e, log_msg="exception at update_student_skills")
+
             return JSONResponse(
-                status_code = status.HTTP_304_NOT_MODIFIED,
+                status_code = status.HTTP_404_NOT_FOUND,
                 content={"message" : "skills cannot be updated successfully"}
             )
     

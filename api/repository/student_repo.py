@@ -1,7 +1,7 @@
 from api.drivers.student import student_drivers
 from api.utils.exceptions import exceptions
 from fastapi.responses import JSONResponse
-
+from api.utils.logger import Logger
 
 def is_authenticated_and_authorized(request, authorization):
 
@@ -27,7 +27,10 @@ async def update_handler(request, authorization, fn):
 
         if response:
             return JSONResponse(status_code=200, 
-            content={"message" : "info updated"})
+            content={"message" : "student information updated"})
+        
+        return JSONResponse(status_code=200, 
+            content={"message" : "student information cannot be updated"})
 
 
     except exceptions.AuthenticationError as e:
@@ -41,7 +44,9 @@ async def update_handler(request, authorization, fn):
             content={"message" : "user not authorized"})
 
     except Exception as e:
-        print(e)
+
+        Logger.error(e, log_msg = "exception in update_handler")
+        
         return JSONResponse(status_code=500, 
         content={"message" : "internal server error"})
 
@@ -100,6 +105,7 @@ async def delete_to_array_of_dict(request, authorization):
 
 async def verify_student_handler(request, authorization):
     try:
+        print(authorization["token"])
         if not authorization["flag"]:
             raise exceptions.AuthenticationError()
 
@@ -135,3 +141,14 @@ async def verify_student_handler(request, authorization):
             content={"message" : authorization["message"]})
 
     
+
+async def update_array_of_refs_handler(request, authorization):
+    """Updates student's array of refs"""
+
+    response = await update_handler(
+        request, 
+        authorization, 
+        student_drivers.Student().update_array_of_refs
+    )
+
+    return response

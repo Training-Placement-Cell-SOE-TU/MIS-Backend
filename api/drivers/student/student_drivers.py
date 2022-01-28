@@ -6,7 +6,10 @@ from api.repository import student_repo
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils import otp_generator
 from api.utils.exceptions import exceptions
+from api.utils.logger import Logger
 from api.utils.model_mappings import model_mappings
+from bson.dbref import DBRef
+from bson.objectid import ObjectId
 from passlib.hash import pbkdf2_sha256
 from pymongo.errors import DuplicateKeyError
 
@@ -322,8 +325,7 @@ class Student:
             raise exceptions.DuplicateStudent()
 
         except Exception as e:
-            #TODO: log to logger
-            print(f"{e} excep err : student driver")
+            Logger.error(e, log_msg="exception in verify_student")
             raise exceptions.UnexpectedError()
 
 
@@ -382,5 +384,49 @@ class Student:
             #TODO: log to logger
             print(f"{e} excep err : student driver")
             raise exceptions.UnexpectedError()
+
+
+    async def update_array_of_refs(self, info: Dict):
+        #TODO: add suitable doc string and exception handling
+
+        student = await StudentModel.find_one(
+            StudentModel.student_id == info["student_id"]
+        )
+
+        if student is None:
+            return False
+        
+        del info["student_id"]
+
+        key, values = list(info.items())[0]
+
+        # Get respective field  value
+        field_value = getattr(student, key)
+
+        counter = 0
+
+        for value in values:
+
+            # If value is not already present then execute
+            if value not in field_value:
+                field_value.append(ObjectId(value))
+            else:
+                counter += 1
+        
+        if counter == len(values):
+            return False
+
+
+        # Setting updated array to the key
+        setattr(student, key, field_value)
+
+        # Commiting changes in db
+        db_response = await StudentModel.save(student)
+
+        if db_response:
+            
+            return True
+
+        return False
 
 
