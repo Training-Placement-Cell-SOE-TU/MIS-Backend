@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import requests
 from pydantic import AnyHttpUrl, BaseModel, EmailStr, root_validator, validator
-
+from api.models.general_use_models import PydanticObjectId
 
 class RegisterStudentSchema(BaseModel):
     fname: str

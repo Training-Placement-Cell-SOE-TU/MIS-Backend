@@ -4,7 +4,7 @@ from uuid import uuid4
 from ..general_use_models import PydanticObjectId
 from beanie import Document, Indexed
 from pydantic import BaseModel, EmailStr, Field, AnyHttpUrl
-
+from bson import ObjectId
 
 class CompanyLetterModel(BaseModel):
     """Company Letters Model"""
@@ -101,7 +101,7 @@ class StudentModel(Document):
     cgpa: Optional[float] = None 
 
     # Skills info
-    skills: List[str] = [] 
+    skills: List[PydanticObjectId] = [] 
     
     # Address info
     permanent_address: Optional[AddressModel] = {}
