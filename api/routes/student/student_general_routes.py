@@ -9,7 +9,7 @@ from api.controllers.student import field_update_controller
 from api.drivers.student import student_drivers
 from api.middlewares import authentication_middleware
 from api.models.student import student_model
-from api.repository import student_repo
+from api.repository import student_repo, student_skills_repo
 from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
 from api.utils.factory import student_factory
@@ -100,6 +100,15 @@ def construct_router():
 
         return response
 
+
+    @student.post("/add/skills")
+    async def add_skills(request: Request):
+        
+        request = await request.json()
+
+        response = await student_skills_repo(request)
+
+        return response
 
 
     return student

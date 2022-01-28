@@ -130,3 +130,5 @@ cython_debug/
 
 # Custom
 sample*
+tests/*
+tnp-micro/
