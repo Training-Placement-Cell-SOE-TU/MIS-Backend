@@ -9,8 +9,6 @@ class SkillsModel(Document):
     skill_name : str
     tags : Optional[List[str]] = []
 
-
-
     class Config:
         anystr_lower = True
         
