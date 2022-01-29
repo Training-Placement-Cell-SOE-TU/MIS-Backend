@@ -20,7 +20,11 @@ def is_authenticated(request: Request):
                         algorithms=[environ.get("JWT_ALGORITHM")]
                     )
             
-            return {"flag": True, "token": payload["token"]}
+            return {
+                "flag": True, 
+                "token": payload["token"], 
+                "role": payload["role"]
+            }
         
         except jwt.ExpiredSignatureError:
 

@@ -34,6 +34,7 @@ def construct_router():
             jwt_payload = jwt.encode(
                 {
                     "token" : request["user_id"],
+                    "role" : "student",
                     "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
                             datetime.timedelta(days = int(environ.get("JWT_EXP", 1)))
                 },

@@ -12,8 +12,7 @@ def is_authenticated_and_authorized(request, authorization):
         raise exceptions.AuthenticationError()
     
     if authorization["token"] != request["student_id"]:
-        raise exceptions.UnauthorizedUser(
-            authorization["token"], "add_to_array_of_dict")
+        raise exceptions.UnauthorizedUser(authorization["token"])
 
 
 async def update_handler(request, authorization, fn):
