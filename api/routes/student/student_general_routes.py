@@ -34,6 +34,7 @@ def construct_router():
             jwt_payload = jwt.encode(
                 {
                     "token" : request["user_id"],
+                    "role" : "student",
                     "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
                             datetime.timedelta(days = int(environ.get("JWT_EXP", 1)))
                 },
@@ -45,15 +46,6 @@ def construct_router():
 
         except Exception as e:
             return JSONResponse(status_code=500, content = {"message" : "internal server error"})
-
-
-    @student.get("/{roll_no}", status_code=status.HTTP_200_OK)
-    async def get_student_by_roll(roll_no: str):
-        return roll_no
-
-    @student.get("/", status_code=status.HTTP_200_OK)
-    async def get_student():
-        pass
 
 
     @student.post("/add")

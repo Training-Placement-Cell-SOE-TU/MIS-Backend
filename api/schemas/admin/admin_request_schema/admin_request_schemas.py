@@ -1,6 +1,8 @@
 from asyncio import events
-from typing import Dict, List
-from pydantic import BaseModel, validator
+from typing import Dict, List, Optional
+
+from pydantic import BaseModel, EmailStr, validator
+
 
 class ManipulateStudentSubscriptionSchema(BaseModel):
     student_id : str
@@ -20,3 +22,8 @@ class ManipulateStudentSubscriptionSchema(BaseModel):
 
         return value
 
+class AddAdminRequestSchema(BaseModel):
+    username: str
+    email: EmailStr
+    password: str 
+    scopes: Optional[List[str]] = ["all"]

@@ -1,7 +1,9 @@
 from api.drivers.student import student_drivers
+from api.schemas.student.response_schemas import student_response_schemas
 from api.utils.exceptions import exceptions
-from fastapi.responses import JSONResponse
 from api.utils.logger import Logger
+from fastapi.responses import JSONResponse
+import json
 
 def is_authenticated_and_authorized(request, authorization):
 
@@ -10,8 +12,7 @@ def is_authenticated_and_authorized(request, authorization):
         raise exceptions.AuthenticationError()
     
     if authorization["token"] != request["student_id"]:
-        raise exceptions.UnauthorizedUser(
-            authorization["token"], "add_to_array_of_dict")
+        raise exceptions.UnauthorizedUser(authorization["token"])
 
 
 async def update_handler(request, authorization, fn):
@@ -105,7 +106,6 @@ async def delete_to_array_of_dict(request, authorization):
 
 async def verify_student_handler(request, authorization):
     try:
-        print(authorization["token"])
         if not authorization["flag"]:
             raise exceptions.AuthenticationError()
 
@@ -152,3 +152,48 @@ async def update_array_of_refs_handler(request, authorization):
     )
 
     return response
+
+async def get_student_profile_handler(roll_no, authorization):
+    try:
+        if not authorization["flag"]:
+            raise exceptions.AuthenticationError()
+
+        response = await student_drivers.Student().get_student_profile(roll_no)
+
+        if not response:
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "message" : "student not found"
+                }
+            )
+        
+        if authorization["token"] == response["student_id"]:
+            
+            return JSONResponse(
+                status_code=200,
+                content = json.loads(
+                    json.dumps(
+                        student_response_schemas
+                        .AuthorizedUserStudentProfileView(**response).__dict__, 
+                        default=lambda o: o.__dict__
+                    )
+                )
+            )
+        
+        return JSONResponse(
+            status_code=200,
+            content = json.loads(
+                json.dumps(
+                    student_response_schemas
+                    .UnauthorizedUserStudentProfileView(**response).__dict__, 
+                    default=lambda o: o.__dict__
+                )
+            )
+        )
+
+        
+    except exceptions.AuthenticationError as e:
+
+        return JSONResponse(status_code=403, 
+            content={"message" : authorization["message"]})

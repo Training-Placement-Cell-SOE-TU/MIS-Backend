@@ -56,16 +56,15 @@ class UnauthorizedUser(Exception):
     
     """
  
-    def __init__(self, user_id, operation, 
-    message: str ="user is not authorized"):
+    def __init__(self, user_role, message: str ="user is not authorized"):
 
-        self.user_id = user_id
-        self.operation = operation
+        self.user_role = user_role
         self.message = message
 
     def __repr__(self):
-        return f"User {self.user_id}: {self.message}, Attemped operation: {self.operation}"
-
+        return (
+            f"User {self.user_role}: {self.message}"
+        )
 
 
 class UnexpectedError(Exception):
