@@ -3,6 +3,8 @@ from urllib.request import Request
 
 from api.drivers.admin import admin_driver
 from api.drivers.student import student_drivers
+from api.utils.exceptions import exceptions
+from api.utils.logger import Logger
 from fastapi.responses import JSONResponse
 
 

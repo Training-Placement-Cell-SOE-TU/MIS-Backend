@@ -43,9 +43,9 @@ class Admin:
         
         return False
 
-    async def check_scope(self, id, scope) -> bool:
+    async def check_scope(self, admin_id, scope) -> bool:
         admin = await AdminModel.find(
-            AdminModel.admin_id == info["admin_id"]
+            AdminModel.admin_id == admin_id
         )
 
         if admin is None:
