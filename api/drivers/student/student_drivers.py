@@ -457,3 +457,37 @@ class Student:
         return student.__dict__
 
         
+    async def set_refresh_token(self, user_id: str):
+        student = await StudentModel.find_one(
+            StudentModel.student_id == user_id
+        )
+
+        if student is None:
+            return False
+
+        token = str(uuid4())
+
+        student.refresh_token = token
+
+        # Commiting changes in db
+        db_response = await StudentModel.save(student)
+
+        if db_response:
+            
+            return token
+
+        return False
+
+    async def check_refresh_token(self, info):
+        student = await StudentModel.find_one(
+            StudentModel.student_id == info["user_id"]
+        )
+
+        if student is None:
+            return False
+        
+        if student.refresh_token == info["token"]:
+            return True
+        
+
+        return False

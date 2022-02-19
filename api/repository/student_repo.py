@@ -197,3 +197,12 @@ async def get_student_profile_handler(roll_no, authorization):
 
         return JSONResponse(status_code=403, 
             content={"message" : authorization["message"]})
+
+
+async def update_refresh_token(user_id):
+    response = await student_drivers.Student().set_refresh_token(user_id)
+
+    if response:
+        return response
+    
+    return False

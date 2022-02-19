@@ -1,8 +1,10 @@
 import jwt
 from api.middlewares import authentication_middleware
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from api.repository import admin_repo, student_repo
+from api.repository import authentication_repo
+
 
 def construct_router():
 
@@ -11,20 +13,54 @@ def construct_router():
     )
 
     @auth.get("/refresh/token")
-    async def refresh_token(
-        authorization = Depends(authentication_middleware.is_authenticated)):
-
-        if not authorization["flag"]:
-            return JSONResponse(
-                status_code=403,
-                content={
-                    "message" : authorization["message"]
-                }
-            )
+    async def refresh_token(request: Request):
         
-        # roles = {
-        #     "admin" : 
-        # }
+        token = request.headers.get("Authorization", None)
+    
+        if token is not None:
+
+            try:
+                encoded_jwt = token.split(" ")[1]
+
+                payload = jwt.decode(
+                    encoded_jwt, 
+                    environ.get("SECRET_KEY"), 
+                    algorithms=[environ.get("JWT_ALGORITHM")]
+                )
+                
+                response = authentication_repo.validate_refresh_token(payload)
+
+                if not response:
+                    return JSONResponse(
+                        status_code = 500,
+                        content = {
+                            "message" : "internal server error"
+                        }
+                    )
+            
+                return JSONResponse(
+                        status_code = 200,
+                        content = {
+                            "token" : response
+                        }
+                    )
+
+            except jwt.ExpiredSignatureError:
+
+                return JSONResponse(
+                    status_code = 401,
+                    content = {
+                        "message" : "token expired"
+                    }
+                )
+
+
+        return JSONResponse(
+            status_code = 400,
+            content = {
+                "message": "Authorization Header not present"
+            }
+        )
     
         
         
