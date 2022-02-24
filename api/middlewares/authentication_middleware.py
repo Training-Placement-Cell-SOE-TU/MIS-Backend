@@ -15,10 +15,10 @@ def is_authenticated(request: Request):
             encoded_jwt = token.split(" ")[1]
 
             payload = jwt.decode(
-                        encoded_jwt, 
-                        environ.get("SECRET_KEY"), 
-                        algorithms=[environ.get("JWT_ALGORITHM")]
-                    )
+                encoded_jwt, 
+                environ.get("SECRET_KEY"), 
+                algorithms=[environ.get("JWT_ALGORITHM")]
+            )
             
             return {
                 "flag": True, 

@@ -1,9 +1,12 @@
+import json
+from typing import Dict
+
 from api.drivers.student import student_drivers
 from api.schemas.student.response_schemas import student_response_schemas
 from api.utils.exceptions import exceptions
 from api.utils.logger import Logger
 from fastapi.responses import JSONResponse
-import json
+
 
 def is_authenticated_and_authorized(request, authorization):
 
@@ -197,3 +200,47 @@ async def get_student_profile_handler(roll_no, authorization):
 
         return JSONResponse(status_code=403, 
             content={"message" : authorization["message"]})
+
+
+async def update_refresh_token(user_id):
+    response = await student_drivers.Student().set_refresh_token(user_id)
+
+    if response:
+        return response
+    
+    return False
+
+
+async def filter_students(filters: Dict):
+    filter_mappings = {
+        "fname" : student_drivers.Student().fname_filter,
+        "lname" : student_drivers.Student().lname_filter,
+        "batch" : student_drivers.Student().batch_filter,
+        "yop_matric" : student_drivers.Student().yop_matric_filter,
+        "yop_hs" : student_drivers.Student().yop_hs_filter,
+        "matric_min_pcnt" : student_drivers.Student().matric_min_pcnt_filter,
+        "hs_min_pcnt" : student_drivers.Student().hs_min_pcnt_filter,
+        "matric_max_pcnt" : student_drivers.Student().matric_max_pcnt_filter,
+        "hs_max_pcnt" : student_drivers.Student().hs_max_pcnt_filter
+    }
+
+    keys = filters.keys()
+
+    idx = 0
+    students = []
+    for key in keys:
+        if idx == 0:
+            fn = filter_mappings[key]
+            students = fn({key : filters[key]})
+            idx += 1
+        
+        i = 0
+        for student in students:
+            if student[key] != filters[key]:
+                students.pop(i)
+            
+            i+=1
+        
+    return students
+
+

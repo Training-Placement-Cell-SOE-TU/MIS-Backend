@@ -457,3 +457,151 @@ class Student:
         return student.__dict__
 
         
+    async def set_refresh_token(self, user_id: str):
+        student = await StudentModel.find_one(
+            StudentModel.student_id == user_id
+        )
+
+        if student is None:
+            return False
+
+        token = str(uuid4())
+
+        student.refresh_token = token
+
+        # Commiting changes in db
+        db_response = await StudentModel.save(student)
+
+        if db_response:
+            
+            return token
+
+        return False
+
+    async def check_refresh_token(self, info):
+        student = await StudentModel.find_one(
+            StudentModel.student_id == info["user_id"]
+        )
+
+        if student is None:
+            return False
+        
+        if student.refresh_token == info["token"]:
+            return True
+        
+
+        return False
+    
+
+    async def fname_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.fname == info["fname"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+    async def lname_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.fname == info["lname"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+    async def batch_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.fname == info["batch"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+    async def yop_matric_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.yop_matric == info["yop_matric"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+    async def yop_hs_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.yop_hs == info["yop_hs"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+
+    async def matric_min_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.matric_pcnt >= info["matric_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+
+    async def hs_min_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.hs_pcnt >= info["hs_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+
+    async def matric_max_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.matric_pcnt <= info["matric_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+
+    async def hs_max_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.hs_pcnt <= info["hs_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student

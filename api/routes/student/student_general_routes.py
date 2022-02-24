@@ -42,10 +42,43 @@ def construct_router():
                 algorithm=environ.get("JWT_ALGORITHM")
             )
 
-            return JSONResponse(content={"token" : jwt_payload})
+            response = student_repo.update_refresh_token(request["user_id"])
+
+            if not response:
+                return JSONResponse(
+                    status_code=500,
+                    content = {
+                        "message" : "internal server error"
+                    }
+                )
+            
+            refresh_token = jwt.encode(
+                {
+                    "user_id" : request["user_id"],
+                    "role" : "student",
+                    "refresh_token" : response,
+                    "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
+                            datetime.timedelta(days = int(environ.get("JWT_EXP", 1)))
+                },
+                environ.get("SECRET_KEY"),
+                algorithm=environ.get("JWT_ALGORITHM")
+            )
+
+            return JSONResponse(
+                status_code=200,
+                content = {
+                    "token" : jwt_payload,
+                    "refresh_token" : refresh_token
+                }
+            )
 
         except Exception as e:
-            return JSONResponse(status_code=500, content = {"message" : "internal server error"})
+            return JSONResponse(
+                status_code=500, 
+                content = {
+                    "message" : "internal server error"
+                }
+            )
 
 
     @student.post("/add")

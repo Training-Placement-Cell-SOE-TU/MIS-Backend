@@ -105,6 +105,7 @@ class StudentModel(Document):
     cgpa: Optional[float] = None 
 
     # Skills info
+    # TODO: reconsider type
     skills: List[Any] = [] 
     
     # Address info

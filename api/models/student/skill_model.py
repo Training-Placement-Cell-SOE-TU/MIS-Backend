@@ -1,7 +1,6 @@
 from uuid import uuid4
 from pydantic import BaseModel
 from beanie import Document
-from uuid import uuid4
 from typing import Optional, List
 
 class SkillsModel(Document):
