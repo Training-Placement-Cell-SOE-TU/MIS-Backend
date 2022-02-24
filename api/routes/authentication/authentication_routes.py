@@ -1,9 +1,10 @@
+from os import environ
+
 import jwt
 from api.middlewares import authentication_middleware
+from api.repository import admin_repo, authentication_repo, student_repo
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from api.repository import admin_repo, student_repo
-from api.repository import authentication_repo
 
 
 def construct_router():
