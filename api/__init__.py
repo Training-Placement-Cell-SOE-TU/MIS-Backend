@@ -4,10 +4,12 @@ from os import environ, path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pymongo import errors
 
 from api.config.database import database
-from api.routes.admin import admin_routes, admin_student_routes
+from api.routes.admin import (admin_routes, admin_student_routes,
+                              admin_training_routes)
 from api.routes.student import (student_add_routes, student_delete_routes,
                                 student_general_routes, student_get_routes,
                                 student_update_routes)
@@ -31,6 +33,15 @@ def create_app():
         description = description
     )
 
+    origins = ["*"]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     # Triggers functions on startup
     @app.on_event("startup")
@@ -63,7 +74,9 @@ def create_app():
     async def shutdown_event():
         print("SHUTDOWN")
 
-
+    @app.get("/")
+    async def index():
+        return {"message" : "running"}
 
     # Register all the routers
     app.include_router(
@@ -99,6 +112,11 @@ def create_app():
     app.include_router(
         admin_student_routes.construct_router(),
         prefix = "/admin"
+    )
+
+    app.include_router(
+        admin_training_routes.construct_router(),
+        prefix = "/training"
     )
 
     

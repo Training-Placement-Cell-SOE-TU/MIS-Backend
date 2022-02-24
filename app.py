@@ -8,4 +8,4 @@ PORT = environ.get('PORT', 3000)
 DEBUG = environ.get('DEBUG', False)
 
 if __name__ == "__main__":
-    uvicorn.run("__main__:app", port = PORT, reload = True)
+    uvicorn.run("__main__:app",host = '0.0.0.0',port = PORT, reload = True)

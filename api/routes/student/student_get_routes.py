@@ -26,4 +26,7 @@ def construct_router():
         except Exception as e:
             Logger.error(e, log_msg="exception in get_student_profile route")
 
+
     return student
+
+

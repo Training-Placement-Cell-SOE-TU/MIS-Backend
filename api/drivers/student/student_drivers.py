@@ -491,3 +491,117 @@ class Student:
         
 
         return False
+    
+
+    async def fname_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.fname == info["fname"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+    async def lname_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.fname == info["lname"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+    async def batch_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.fname == info["batch"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+    async def yop_matric_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.yop_matric == info["yop_matric"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+    async def yop_hs_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.yop_hs == info["yop_hs"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+    
+
+
+    async def matric_min_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.matric_pcnt >= info["matric_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+
+    async def hs_min_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.hs_pcnt >= info["hs_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+
+    async def matric_max_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.matric_pcnt <= info["matric_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
+
+    async def hs_max_pcnt_filter(self, info):
+        
+        student = await StudentModel.find(
+            StudentModel.hs_pcnt <= info["hs_pcnt"]
+        )
+
+
+        if student is None:
+            return False
+
+        return student
