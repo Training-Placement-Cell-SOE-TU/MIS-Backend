@@ -37,5 +37,3 @@ def send_email(receiver_address:str, mail_subject:str, mail_content:str):
 
     except Exception:
         print("Error: unable to send email")
-
-send_email("ashishsarmah11@gmail.com", "Test", "Test")
