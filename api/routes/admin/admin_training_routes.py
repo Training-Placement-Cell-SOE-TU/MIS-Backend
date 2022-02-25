@@ -15,6 +15,7 @@ from api.utils.logger import Logger
 from bson.objectid import ObjectId
 from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
+from api.utils.send_email import send_email
 
 
 def construct_router():
@@ -67,7 +68,7 @@ def construct_router():
             db_response = await TrainingModel.save(trainings)
 
             if db_response:
-                return JSONResponse(
+                return JSONResponse(    
                     status_code = 200,
                     content = {
                         "message" : "training added successfully"
@@ -149,6 +150,7 @@ def construct_router():
         db_response = await TrainingRegistrations.save(student)
 
         if db_response:
+            send_email(request.student_email, "Training Registration", "You have been successfully registered for the training")
             return JSONResponse(
                 status_code = 200,
                 content = {
