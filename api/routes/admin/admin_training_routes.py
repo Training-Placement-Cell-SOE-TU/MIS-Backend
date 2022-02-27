@@ -17,7 +17,6 @@ from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from api.utils.send_email import send_email
 
-
 def construct_router():
 
     training = APIRouter(
@@ -144,13 +143,12 @@ def construct_router():
                 }
             )
         
-
         student = TrainingRegistrations(**request.__dict__)
 
         db_response = await TrainingRegistrations.save(student)
 
         if db_response:
-            send_email(request.student_email, "Training Registration", "You have been successfully registered for the training")
+            send_email(request.student_email, "Training Registration", trainings)
             return JSONResponse(
                 status_code = 200,
                 content = {
