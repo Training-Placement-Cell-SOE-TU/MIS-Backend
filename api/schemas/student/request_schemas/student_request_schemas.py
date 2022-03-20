@@ -39,14 +39,13 @@ class RegisterStudentSchema(BaseModel):
         
         return value
 
-    # @validator('password', always=True)
-    # def check_batch_le_current_year(cls, value):
-    #     todays_date = datetime.date.today()
+    @validator('password', always=True)
+    def check_password_length(cls, value):
+        """Password should be atleast 8 characters long"""
+        if(len(value) < 8):
+            raise ValueError("Password should be atleast 8 characters long")
 
-    #     if((todays_date.year + 4) < value):
-    #         raise ValueError("Batch greater than current year + 4 is not allowed")
-        
-    #     return value
+        return value
 
 
     class Config:
@@ -85,6 +84,15 @@ class StudentPersonalInfoSchema(BaseModel):
 
         if(value < 1994):
             raise ValueError("Tezpur University did not exist before 1994")
+        
+        return value
+
+    @validator('phone', always=True)
+    def check_phone_length(cls, value):
+        """Phone number should be of 10 digits (for indian phone) """
+
+        if(len(value) != 10):
+            raise ValueError("Phone number should be of 10 digits")
         
         return value
 
@@ -129,6 +137,61 @@ class StudentEducationalInfoSchema(BaseModel):
     yop_hs: int
     sgpa: List[float]
     cgpa: float
+
+    @validator('matric_pcnt', always=True)
+    def check_matric_pcnt_lt_100(cls, value):
+        """Percentage of Matric should be less than 100 and greater than 0"""
+        if(value > 100 or value < 0):
+            raise ValueError("Percentage of Matric should be less than 100 and greater than 0")
+        
+        return value
+
+    @validator('hs_pcnt', always=True)
+    def check_hs_pcnt_lt_100(cls, value):
+        """Percentage of HS should be less than 100 and greater than 0"""
+        if(value > 100 or value < 0):
+            raise ValueError("Percentage of HS should be less than 100 and greater than 0")
+        
+        return value
+
+    @validator('yop_hs', always=True)
+    def check_yop_hs(cls, value):
+        """Year of passing of HS should be less than current year and greater than matric year"""
+        if(value > datetime.date.today().year):
+            raise ValueError("Year of passing of HS should be less than current year")
+
+        return value
+
+    @validator('yop_hs', always=True)
+    def check_yop_hs_gt_matric_yop(cls, value):
+        if(value < cls.yop_matric):
+            raise ValueError("Year of passing of HS should be greater than matric year")
+            
+        return value
+
+    @validator('sgpa', always=True)
+    def validate_sgpa(cls, value):
+        """Validates SGPA of the student
+            Criterias :  
+                -> SGPA should be between 0 and 10.
+        """
+        for sgpa in value:
+            if(sgpa < 0 or sgpa > 10):
+                raise ValueError("SGPA is invalid")
+        
+        return value
+
+    @validator('cgpa', always=True)
+    def validate_cgpa(cls, value):
+        """Validates CGPA of the student
+            Criterias :  
+                -> CGPA should be between 0 and 10.
+        """
+        if(value < 0 or value > 10):
+            raise ValueError("CGPA is invalid")
+        
+        return value
+
 
 
 class StudentAddressFormat(BaseModel):
