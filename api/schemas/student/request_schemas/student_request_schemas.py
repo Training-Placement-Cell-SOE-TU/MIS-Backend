@@ -53,7 +53,7 @@ class RegisterStudentSchema(BaseModel):
                 -> Password should have at least one digit
                 -> Password should have at least one special character
         '''
-        password_regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        password_regex = re.compile(r'[A-Za-z0-9@#$%^&+=]{8,}')
         if not password_regex.match(value):
             raise ValueError("""Password should have at least one uppercase, one lowercase,
              one digit and one special character""")
@@ -441,7 +441,7 @@ class UpdateStudentPasswordSchema(BaseModel):
                 -> Password should have at least one digit
                 -> Password should have at least one special character
         '''
-        password_regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        password_regex = re.compile(r'[A-Za-z0-9@#$%^&+=]{8,}')
         if not password_regex.match(value):
             raise ValueError("""Password should have at least one uppercase, one lowercase,
              one digit and one special character""")
