@@ -10,7 +10,6 @@ from api.models.general_use_models import PydanticObjectId
 
 from api.utils.company_profile_verifier import validate_company_profile
 from api.drivers.student import student_drivers
-# import api\drivers\student\student_drivers.py
 
 class RegisterStudentSchema(BaseModel):
     fname: str
@@ -365,22 +364,26 @@ class StudentSocialInfoSchema(BaseModel):
                     listed out social media platforms
         """
 
-        #TODO: Check same platform should not be entered twice 
+    #TODO: Check same platform should not be entered twice 
 
     @validator('platform_name', always=True)
     async def check_if_platform_exist(cls, value):
         student_prev_skill = await student_drivers.Student().get_student_social(cls.student_id)
-        print(student_prev_skill)
+        if student_prev_skill:
+            for prev_skill in student_prev_skill:
+                if prev_skill["platform_name"] == value:
+                    raise ValueError("Platform already exist")
         return True
 
 
-        #TODO: Optimise the code, failing on testcases
-
+    #TODO: Optimise the code, failing on testcases
+    @validator('platform_name', always=True)
+    def check_if_isblacklisted(cls, value):
         try:
             blacklist_platforms = [
-                'instagram', 'snapchat', 'discord', 'tiktok', 'sharechat', 't.me',
-                'pinterest', 'reddit', 'facebook', 'tinder', 'mxtakatak'
-            ]
+                    'instagram', 'snapchat', 'discord', 'tiktok', 'sharechat', 't.me',
+                    'pinterest', 'reddit', 'facebook', 'tinder', 'mxtakatak'
+                ]
 
             domain_by_dot = value.split('.')[1]
             print(domain_by_dot)
@@ -393,11 +396,9 @@ class StudentSocialInfoSchema(BaseModel):
             print(domain_by_slash)
             if domain_by_slash.lower() in blacklist_platforms:
                 raise ValueError(f"{value} platform is not accepted")
-
-            return value
-            
+                
         except Exception as e:
-            raise ValueError(f"{value} platform is not accepted")
+                raise ValueError(f"{value} platform is not accepted")
 
 
 class DeleteStudentArrayOfListSchema(BaseModel):
