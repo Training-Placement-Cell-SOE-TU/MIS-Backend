@@ -3,11 +3,14 @@ import pprint
 import re
 
 from typing import List, Optional
+from urllib import response
 
 from pydantic import AnyHttpUrl, BaseModel, EmailStr, root_validator, validator
 from api.models.general_use_models import PydanticObjectId
 
 from api.utils.company_profile_verifier import validate_company_profile
+from api.drivers.student import student_drivers
+# import api\drivers\student\student_drivers.py
 
 class RegisterStudentSchema(BaseModel):
     fname: str
@@ -363,6 +366,14 @@ class StudentSocialInfoSchema(BaseModel):
         """
 
         #TODO: Check same platform should not be entered twice 
+
+    @validator('platform_name', always=True)
+    async def check_if_platform_exist(cls, value):
+        student_prev_skill = await student_drivers.Student().get_student_social(cls.student_id)
+        print(student_prev_skill)
+        return True
+
+
         #TODO: Optimise the code, failing on testcases
 
         try:
@@ -447,7 +458,3 @@ class UpdateStudentPasswordSchema(BaseModel):
              one digit and one special character""")
 
         return value
-
-        
-
-        
