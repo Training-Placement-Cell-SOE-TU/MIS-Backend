@@ -3,11 +3,13 @@ import pprint
 import re
 
 from typing import List, Optional
+from urllib import response
 
 from pydantic import AnyHttpUrl, BaseModel, EmailStr, root_validator, validator
 from api.models.general_use_models import PydanticObjectId
 
 from api.utils.company_profile_verifier import validate_company_profile
+from api.drivers.student import student_drivers
 
 class RegisterStudentSchema(BaseModel):
     fname: str
@@ -53,7 +55,7 @@ class RegisterStudentSchema(BaseModel):
                 -> Password should have at least one digit
                 -> Password should have at least one special character
         '''
-        password_regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        password_regex = re.compile(r'[A-Za-z0-9@#$%^&+=]{8,}')
         if not password_regex.match(value):
             raise ValueError("""Password should have at least one uppercase, one lowercase,
              one digit and one special character""")
@@ -362,14 +364,26 @@ class StudentSocialInfoSchema(BaseModel):
                     listed out social media platforms
         """
 
-        #TODO: Check same platform should not be entered twice 
-        #TODO: Optimise the code, failing on testcases
+    #TODO: Check same platform should not be entered twice 
 
+    @validator('platform_name', always=True)
+    async def check_if_platform_exist(cls, value):
+        student_prev_skill = await student_drivers.Student().get_student_social(cls.student_id)
+        if student_prev_skill:
+            for prev_skill in student_prev_skill:
+                if prev_skill["platform_name"] == value:
+                    raise ValueError("Platform already exist")
+        return True
+
+
+    #TODO: Optimise the code, failing on testcases
+    @validator('platform_name', always=True)
+    def check_if_isblacklisted(cls, value):
         try:
             blacklist_platforms = [
-                'instagram', 'snapchat', 'discord', 'tiktok', 'sharechat', 't.me',
-                'pinterest', 'reddit', 'facebook', 'tinder', 'mxtakatak'
-            ]
+                    'instagram', 'snapchat', 'discord', 'tiktok', 'sharechat', 't.me',
+                    'pinterest', 'reddit', 'facebook', 'tinder', 'mxtakatak'
+                ]
 
             domain_by_dot = value.split('.')[1]
             print(domain_by_dot)
@@ -382,11 +396,9 @@ class StudentSocialInfoSchema(BaseModel):
             print(domain_by_slash)
             if domain_by_slash.lower() in blacklist_platforms:
                 raise ValueError(f"{value} platform is not accepted")
-
-            return value
-            
+                
         except Exception as e:
-            raise ValueError(f"{value} platform is not accepted")
+                raise ValueError(f"{value} platform is not accepted")
 
 
 class DeleteStudentArrayOfListSchema(BaseModel):
@@ -441,13 +453,9 @@ class UpdateStudentPasswordSchema(BaseModel):
                 -> Password should have at least one digit
                 -> Password should have at least one special character
         '''
-        password_regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        password_regex = re.compile(r'[A-Za-z0-9@#$%^&+=]{8,}')
         if not password_regex.match(value):
             raise ValueError("""Password should have at least one uppercase, one lowercase,
              one digit and one special character""")
 
         return value
-
-        
-
-        

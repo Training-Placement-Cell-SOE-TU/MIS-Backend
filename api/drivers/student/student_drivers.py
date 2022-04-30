@@ -605,3 +605,28 @@ class Student:
             return False
 
         return student
+
+    async def get_student_social(self , info):
+        student = await StudentModel.find_one(
+            StudentModel.student_id == info["student_id"]
+        )
+
+        if student is None:
+            return False
+
+        if len(student.skills) == 0:
+            return student.__dict__
+
+        skill_names = []
+
+        for val in student.skills:
+            skill = await SkillsModel.find_one(
+                {"_id" : val}
+            )
+
+            if skill is not None:
+                skill_names.append(skill.skill_name)
+
+        student.skills = skill_names        
+
+        return student.__dict__
