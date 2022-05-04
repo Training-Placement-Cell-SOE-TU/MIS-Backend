@@ -4,8 +4,10 @@
 """
 
 
+from ast import Not
 import json as j
 from os import path
+import re
 
 from api.models.training.training import (AttendanceForm, TrainingModel,
                                           TrainingRegistrations)
@@ -167,6 +169,7 @@ def construct_router():
     @training.put("/update/training")
     async def update_training_details(request: Request):
         request = await request.json()
+        print("LOG", request)
 
         trainings = await TrainingModel.find_one(
             TrainingModel.training_id == request["training_id"]
@@ -238,11 +241,12 @@ def construct_router():
     async def delete_training(request: Request):
         request = await request.json()
 
+        print("LOG" , request)
         trainings = await TrainingModel.find_one(
             TrainingModel.training_id == request["training_id"]
         )
 
-        if trainings is not None:
+        if trainings is None:
             return JSONResponse(
                 status_code = 404,
                 content = {
@@ -259,12 +263,12 @@ def construct_router():
                     "message" : "training deleted successfully"
                 }
             )
-        
-        return JSONResponse(
-            status_code = 500,
-            content = {
-                "message" : "training cannot be deleted"
-            }
-        )
+        # else:
+        #     return JSONResponse(
+        #         status_code = 500,
+        #         content = {
+        #             "message" : "training cannot be deleted"
+        #         }
+        #     )
 
     return training
