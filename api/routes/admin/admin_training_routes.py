@@ -9,6 +9,8 @@ import json as j
 from os import path
 import re
 
+from pyparsing import one_of
+
 from api.models.training.training import (AttendanceForm, TrainingModel,
                                           TrainingRegistrations)
 from api.schemas.training.request_schemas import training_request_schemas
@@ -18,6 +20,7 @@ from bson.objectid import ObjectId
 from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from api.utils.send_email import send_email
+from api.utils.save_data_xslv import save_data
 
 def construct_router():
 
@@ -150,7 +153,7 @@ def construct_router():
         db_response = await TrainingRegistrations.save(student)
 
         if db_response:
-            send_email(request.student_email, "Training Registration", trainings)
+            # send_email(request.student_email, "Training Registration", trainings)
             return JSONResponse(
                 status_code = 200,
                 content = {
@@ -166,14 +169,34 @@ def construct_router():
         )
 
 
+    @training.post("/student/data")
+    async def get_training_registration_data(request: Request):
+        request = await request.json()
+
+        training_registrations = await TrainingRegistrations.find(
+            TrainingModel.training_id == request["training_id"]
+        ).to_list()
+
+        save_data(training_registrations)
+
+        if training_registrations:
+            return JSONResponse(
+                status_code=200,
+                content= {
+                    "message" : "training details saved succesfully"
+                }
+            )
+
     @training.put("/update/training")
     async def update_training_details(request: Request):
         request = await request.json()
-        print("LOG", request)
+        # print("LOG", request)
 
         trainings = await TrainingModel.find_one(
             TrainingModel.training_id == request["training_id"]
         )
+
+        print(trainings)
 
         if trainings is None:
             return JSONResponse(
@@ -263,12 +286,12 @@ def construct_router():
                     "message" : "training deleted successfully"
                 }
             )
-        # else:
-        #     return JSONResponse(
-        #         status_code = 500,
-        #         content = {
-        #             "message" : "training cannot be deleted"
-        #         }
-        #     )
+        else:
+            return JSONResponse(
+                status_code = 500,
+                content = {
+                    "message" : "training cannot be deleted"
+                }
+            )
 
     return training
