@@ -99,3 +99,17 @@ class UnauthorizedUserStudentProfileView(BaseModel):
     
     # Social info
     social_links: Optional[List[SocialModel]]
+
+class adminProfileView(BaseModel):
+
+    events: List[str]
+    
+    # Personal info 
+    fname: str
+    lname: str
+    roll_no: str
+    batch: int 
+    branch: str
+    gender: str
+    email: str
+    phone: str
