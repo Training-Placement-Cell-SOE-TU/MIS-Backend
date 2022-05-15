@@ -4,6 +4,7 @@ from uuid import uuid4
 from api.models.student.skill_model import SkillsModel
 from api.models.student.student_model import *
 from api.schemas.student.request_schemas import student_request_schemas
+from api.schemas.student.response_schemas import student_response_schemas
 from api.utils import otp_generator
 from api.utils.exceptions import exceptions
 from api.utils.logger import Logger
@@ -11,6 +12,8 @@ from api.utils.model_mappings import model_mappings
 from bson.objectid import ObjectId
 from passlib.hash import pbkdf2_sha256
 from pymongo.errors import DuplicateKeyError
+
+import json
 
 
 class Student:
@@ -630,3 +633,22 @@ class Student:
         student.skills = skill_names        
 
         return student.__dict__
+
+    async def get_all_students(self):
+
+        students =  await StudentModel.find_all().to_list()
+
+        result = []
+        for student in students:
+            result.append(
+                    json.loads(
+                        json.dumps(
+                        student_response_schemas
+                        .adminProfileView(**student.__dict__).__dict__, 
+                            default=lambda o: o.__dict__
+                        )
+                    )
+            )
+
+
+        return result
