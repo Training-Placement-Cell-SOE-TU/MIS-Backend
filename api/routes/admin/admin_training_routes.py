@@ -279,7 +279,7 @@ def construct_router():
         
         db_response = await trainings.delete()
 
-        if db_response:
+        if not db_response:
             return JSONResponse(
                 status_code = 200,
                 content = {
