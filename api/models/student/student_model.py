@@ -131,9 +131,9 @@ class StudentModel(Document):
     # Social info
     social_links: Optional[List[SocialModel]] = []
 
-
-    class Config:
-        anystr_lower = True
+    #TODO: solve this problem to activate this method
+    # class Config:
+    #     anystr_lower = True
 
     class Collection:
         name = "student"
