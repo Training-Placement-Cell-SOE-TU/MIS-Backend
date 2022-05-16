@@ -8,8 +8,10 @@ from ast import Not
 import json as j
 from os import path
 import re
+from urllib import response
 
 from pyparsing import one_of
+from requests import Response
 
 from api.models.training.training import (AttendanceForm, TrainingModel,
                                           TrainingRegistrations)
@@ -21,6 +23,9 @@ from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from api.utils.send_email import send_email
 from api.utils.save_data_xslv import save_data
+
+from starlette.responses import FileResponse
+
 
 def construct_router():
 
@@ -186,6 +191,25 @@ def construct_router():
                     "message" : "training details saved succesfully"
                 }
             )
+        
+        return JSONResponse(
+            status_code=500,
+            content= {
+                "message" : "training details cannot be saved"
+            }
+        )
+
+    @training.get("/student/data")
+    async def get_training_registration_data(request: Request):
+        filename = "example2.xls"
+        #send excel file
+        return  FileResponse(
+            filename,
+            filename="data.xls",
+            status_code=200,
+            media_type="application/vnd.ms-excel"
+        )
+
 
     @training.put("/update/training")
     async def update_training_details(request: Request):
@@ -205,6 +229,7 @@ def construct_router():
                     "message" : "training details not found"
                 }
             )
+        
         
 
         # Training details update
