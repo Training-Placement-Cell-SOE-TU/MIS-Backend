@@ -1,5 +1,7 @@
 
 import datetime
+import email
+import ipaddress
 import pprint
 from os import environ
 
@@ -14,9 +16,13 @@ from api.schemas.student.request_schemas import student_request_schemas
 from api.utils.exceptions import exceptions
 from api.utils.factory import student_factory
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
+from passlib.hash import pbkdf2_sha256
 
+
+local_ip = environ.get("IPADDRESS")
+port = environ.get("PORT_FRONTEND")
 
 def construct_router():
 
@@ -31,9 +37,29 @@ def construct_router():
         try:
             request = await request.json()
 
+            student = await student_model.StudentModel.find_one(
+                student_model.StudentModel.email == request["email"]
+            )
+
+            if student is None:
+                return JSONResponse(
+                    status_code=500,
+                    content = {
+                        "message": "student doesn't exist"
+                    }
+                )
+
+            if not pbkdf2_sha256.verify(request["password"], student.password):
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "message" : "Username or password incorrect"
+                    }
+                )
+
             jwt_payload = jwt.encode(
                 {
-                    "token" : request["user_id"],
+                    "token" : student.student_id,
                     "role" : "student",
                     "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
                             datetime.timedelta(days = int(environ.get("JWT_EXP", 1)))
@@ -42,7 +68,7 @@ def construct_router():
                 algorithm=environ.get("JWT_ALGORITHM")
             )
 
-            response = student_repo.update_refresh_token(request["user_id"])
+            response =await student_repo.update_refresh_token(student.student_id)
 
             if not response:
                 return JSONResponse(
@@ -54,7 +80,7 @@ def construct_router():
             
             refresh_token = jwt.encode(
                 {
-                    "user_id" : request["user_id"],
+                    "user_id" : student.student_id,
                     "role" : "student",
                     "refresh_token" : response,
                     "exp": datetime.datetime.now(tz=datetime.timezone.utc) + 
