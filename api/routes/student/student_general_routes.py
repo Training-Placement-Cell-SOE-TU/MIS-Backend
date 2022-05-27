@@ -93,6 +93,7 @@ def construct_router():
             return JSONResponse(
                 status_code=200,
                 content = {
+                    "roll_no" : student.roll_no,
                     "token" : jwt_payload,
                     "refresh_token" : refresh_token
                 }
