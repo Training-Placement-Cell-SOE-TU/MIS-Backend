@@ -12,8 +12,9 @@ class AdminModel(Document):
     password: str 
     scopes: List[str] = []
 
-    class Config:
-        anystr_lower = True
+    # To solve this problem
+    # class Config:
+    #     anystr_lower = True
 
     class Collection:
         name = "admin"
