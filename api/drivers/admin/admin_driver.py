@@ -24,6 +24,18 @@ class Admin:
             return True
         
         return False
+
+    async def get_admin_profile(self, username):
+        admin = await AdminModel.find_one(
+            AdminModel.username == username
+        )
+
+        print(admin)
+
+        if username is None:
+            return False
+
+        return admin.__dict__
     
 
     async def update_admin_password(self, info: Dict):

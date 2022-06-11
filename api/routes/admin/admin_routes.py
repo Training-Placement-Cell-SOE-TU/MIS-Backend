@@ -61,6 +61,7 @@ def construct_router():
                 status_code=200,
                 content = {
                     "token" : jwt_payload,
+                    "username": admin.username
                 }
             )
 

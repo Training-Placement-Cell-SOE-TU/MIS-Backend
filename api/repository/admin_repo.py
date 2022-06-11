@@ -1,5 +1,6 @@
 from typing import Dict
 from urllib.request import Request
+from api.utils.exceptions import exceptions
 
 from api.drivers.admin import admin_driver
 from api.drivers.student import student_drivers
@@ -87,4 +88,30 @@ async def add_admin_handler(request):
         )
 
 
+async def get_admin_profile_handler(username, authorization):
+    try:
+        if not authorization["flag"]:
+            raise exceptions.AuthenticationError()
 
+        response = await admin_driver.Admin().get_admin_profile(username)
+
+        if not response:
+            return JSONResponse(
+                status_code=404,
+                content = {
+                    "message": "admin not found"
+                }
+            )
+    
+        if authorization["token"] == response["admin_id"]:
+           return JSONResponse(
+                status_code=200,
+                content={
+                    "messsage": "auithorization successful"
+                }
+           )
+
+    except exceptions.AuthenticationError as e:
+
+        return JSONResponse(status_code=403, 
+            content={"message" : authorization["message"]})
