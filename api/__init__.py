@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pymongo import errors
 
 from api.config.database import database
-from api.routes.admin import (admin_routes, admin_student_routes,
+from api.routes.admin import (admin_get_routes, admin_routes, admin_student_routes,
                               admin_training_routes)
 from api.routes.student import (student_add_routes, student_delete_routes,
                                 student_general_routes, student_get_routes,
@@ -107,6 +107,11 @@ def create_app():
     app.include_router(
         admin_routes.construct_router(),
         prefix = "/admin"
+    )
+
+    app.include_router(
+        admin_get_routes.construct_router(),
+        prefix="/admin"
     )
 
     app.include_router(
