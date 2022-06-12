@@ -1,4 +1,6 @@
+from fileinput import filename
 from urllib.request import Request
+from api.drivers import student
 
 from api.drivers.student import student_drivers
 from api.middlewares import authentication_middleware
@@ -9,6 +11,9 @@ from api.utils.exceptions import exceptions
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from api.repository import admin_repo
+from api.utils.save_student_data import save_data
+
+from starlette.responses import FileResponse
 
 import json
 
@@ -133,5 +138,19 @@ def construct_router():
         except Exception as e:
             print(e, "exception")
 
+    @admin.get("/student/data")
+    async def get_student_data():
+        students = await (
+            student_drivers.Student().get_all_students()
+        )
+
+        save_data(students)
+        
+        return FileResponse(
+            "student_data.xls",
+            filename="allStudentsData.xls",
+            status_code=200,
+            media_type="application/vnd.ms-excel"    
+        )
 
     return admin

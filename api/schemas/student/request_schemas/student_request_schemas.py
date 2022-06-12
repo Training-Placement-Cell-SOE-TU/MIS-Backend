@@ -180,8 +180,8 @@ class StudentEducationalInfoSchema(BaseModel):
         return value
 
     @validator('yop_hs', always=True)
-    def check_yop_hs_gt_matric_yop(cls, value):
-        if(value < cls.yop_matric):
+    def check_yop_hs_gt_matric_yop(cls, value, values):
+        if(value < values["yop_matric"]):
             raise ValueError("Year of passing of HS should be greater than matric year")
             
         return value
