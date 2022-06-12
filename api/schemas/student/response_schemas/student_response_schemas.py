@@ -8,6 +8,7 @@ class AuthorizedUserStudentProfileView(BaseModel):
 
     events: List[str]
     
+    student_id: str
     # Personal info 
     fname: str
     lname: str
