@@ -114,3 +114,20 @@ class adminProfileView(BaseModel):
     gender: str
     email: str
     phone: str
+
+class AdminDataSaveView(BaseModel):
+
+    fname: str
+    lname: str
+    roll_no: str
+    batch: int 
+    branch: str
+    gender: str
+    email: str
+    phone: str
+
+    # Educational info
+    matric_pcnt: Optional[float]
+    yop_matric: Optional[int]
+    hs_pcnt: Optional[float]
+    yop_hs: Optional[int]

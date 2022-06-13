@@ -5,7 +5,8 @@ def save_data(students):
 
     sheet1 = wb.add_sheet("Sheet 1")
 
-    headers = ["Sl. No", "First Name", "Last Name", "Roll No", "Batch", "Branch", "Gender", "Email", "Phone"]
+    headers = ["Sl. No", "First Name", "Last Name", "Roll No", "Batch", "Branch", "Gender", "Email", "Phone", "10th %", 
+            "10th Year of Passing", "12th %", "12th Year Of Passing"]
 
     #To add the headers
     for i in range(0, len(headers)):
@@ -23,6 +24,10 @@ def save_data(students):
             sheet1.write(row, 6, students[row-1]["gender"])
             sheet1.write(row, 7, students[row-1]["email"])
             sheet1.write(row, 8, students[row-1]["phone"])
+            sheet1.write(row, 9, label=students[row-1]["matric_pcnt"])
+            sheet1.write(row, 10, students[row-1]["yop_matric"])
+            sheet1.write(row, 11, students[row-1]["hs_pcnt"])
+            sheet1.write(row, 12, students[row-1]["yop_hs"])
     
     except Exception:
         print("Unable to Save")

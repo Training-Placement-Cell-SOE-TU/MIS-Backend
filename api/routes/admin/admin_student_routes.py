@@ -138,19 +138,39 @@ def construct_router():
         except Exception as e:
             print(e, "exception")
 
-    @admin.get("/student/data")
+    @admin.post("/student/data")
     async def get_student_data():
         students = await (
-            student_drivers.Student().get_all_students()
+            student_drivers.Student().get_all_students_data()
         )
 
+        # print(students)
         save_data(students)
         
-        return FileResponse(
-            "student_data.xls",
-            filename="allStudentsData.xls",
+        if students:
+            return JSONResponse(
+                status_code=200,
+                content= {
+                    "message" : "training details saved succesfully"
+                }
+            )
+        
+        return JSONResponse(
+            status_code=500,
+            content= {
+                "message" : "training details cannot be saved"
+            }
+        )
+
+    @admin.get("/student/data")
+    async def get_student_data(request: Request):
+        filename = "student_data.xls"
+        #send excel file
+        return  FileResponse(
+            filename,
+            filename="student_data.xls",
             status_code=200,
-            media_type="application/vnd.ms-excel"    
+            media_type="application/vnd.ms-excel"
         )
 
     return admin
