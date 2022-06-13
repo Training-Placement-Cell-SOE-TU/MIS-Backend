@@ -650,5 +650,23 @@ class Student:
                     )
             )
 
+        return result
+
+    async def get_all_students_data(self):
+
+        students =  await StudentModel.find_all().to_list()
+
+        result = []
+        for student in students:
+            result.append(
+                    json.loads(
+                        json.dumps(
+                        student_response_schemas
+                        .AdminDataSaveView(**student.__dict__).__dict__, 
+                            default=lambda o: o.__dict__
+                        )
+                    )
+            )
+
 
         return result
