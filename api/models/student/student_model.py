@@ -64,6 +64,7 @@ class AddressModel(BaseModel):
     state: str = ''
     district: str = ''
     country: str = ''
+    city: str = ''
     address_line_1: str = ''
     address_line_2: Optional[str] = None
 
@@ -72,6 +73,7 @@ class StudentModel(Document):
     """Maps student model to database document. """
 
     # Extra functionality use fields
+    register_date: datetime.datetime = datetime.datetime.now()
     refresh_token: str = ''
     is_account_active: bool = False
     is_banned: bool = False
@@ -88,7 +90,8 @@ class StudentModel(Document):
     gender: str
     email: Indexed(str, unique=True) 
     phone: Optional[str] = None
-    password: str 
+    password: str
+    programme: str
     
     # Additional info
     category: str = '' 

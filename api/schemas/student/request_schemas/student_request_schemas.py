@@ -21,7 +21,16 @@ class RegisterStudentSchema(BaseModel):
     email: EmailStr
     phone: str
     password: str
-    
+    programme: str
+
+    @validator('email', always=True)
+    def check_gmail(cls, value):
+        "Only Gmail Account Allowed"
+
+        if "@gmail.com" not in value:
+            raise ValueError("Only Gmail Account Allowed")
+
+        return value
     
     @validator('batch', always=True)
     def check_batch_le_current_year(cls, value):
@@ -134,13 +143,13 @@ class StudentAdditionalInfoSchema(BaseModel):
                 -> Birth month should be less than or equal to 12.      
         """
         birth_date = value.split("/")
-        birth_month, birth_year = int(birth_date[0]), int(birth_date[1])
+        birth_month, birth_year = int(birth_date[1]), int(birth_date[2])
         curr_date = datetime.date.today()
 
         if birth_month > 12 and birth_year > curr_date.year:
             raise ValueError("Date of birth is invalid")
 
-        if birth_year < curr_date.year - 16 :
+        if birth_year > curr_date.year - 16 :
             raise ValueError("Year of birth is invalid")
 
         return value
