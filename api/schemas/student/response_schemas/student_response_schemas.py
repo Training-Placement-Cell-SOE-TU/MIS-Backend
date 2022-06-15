@@ -18,7 +18,8 @@ class AuthorizedUserStudentProfileView(BaseModel):
     gender: str
     email: str
     phone: str
-    password: str 
+    password: str
+    current_sem: str 
     
     # Additional info
     category: str
@@ -41,6 +42,9 @@ class AuthorizedUserStudentProfileView(BaseModel):
     permanent_address: Optional[AddressModel]
     is_permanent_equals_present: bool
     present_address: Optional[AddressModel]
+
+    #Competitive Exam info
+    competitive_exam: Optional[CompetitiveExamModel]
     
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]]

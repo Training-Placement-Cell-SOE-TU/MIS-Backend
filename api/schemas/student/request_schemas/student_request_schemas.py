@@ -1,4 +1,5 @@
 import datetime
+from optparse import Option
 import pprint
 import re
 
@@ -21,7 +22,16 @@ class RegisterStudentSchema(BaseModel):
     email: EmailStr
     phone: str
     password: str
-    
+    programme: str
+
+    @validator('email', always=True)
+    def check_gmail(cls, value):
+        "Only Gmail Account Allowed"
+
+        if "@gmail.com" not in value:
+            raise ValueError("Only Gmail Account Allowed")
+
+        return value
     
     @validator('batch', always=True)
     def check_batch_le_current_year(cls, value):
@@ -79,7 +89,7 @@ class StudentPersonalInfoSchema(BaseModel):
     gender: str
     email: EmailStr
     phone: str
-
+    current_sem: str
 
     @validator('batch', always=True)
     def check_batch_le_current_year(cls, value):
@@ -134,18 +144,46 @@ class StudentAdditionalInfoSchema(BaseModel):
                 -> Birth month should be less than or equal to 12.      
         """
         birth_date = value.split("/")
-        birth_month, birth_year = int(birth_date[0]), int(birth_date[1])
+        birth_month, birth_year = int(birth_date[1]), int(birth_date[2])
         curr_date = datetime.date.today()
 
         if birth_month > 12 and birth_year > curr_date.year:
             raise ValueError("Date of birth is invalid")
 
-        if birth_year < curr_date.year - 16 :
+        if birth_year > curr_date.year - 16 :
             raise ValueError("Year of birth is invalid")
 
         return value
 
+class StudentCompetitiveSchema(BaseModel):
+    competitive_exam: str
+    competitive_yop: Optional[int] = None
+    exam_id: str
+    exam_score: Optional[float] = None
+    exam_air: Optional[str] = None
 
+    @validator('exam_score', always=True)
+    def check_exam_score(cls, value):
+        """Validates the exam score
+            Criteria:
+                -> Exam score should be between 0 and 100
+        """
+        if not (0 <= value <= 100):
+            raise ValueError("Exam score should be between 0 and 100")
+
+        return value
+
+    @validator('competitive_yop', always=True)
+    def check_competitive_yop(cls, value):
+        """Validates the competitive year of passing
+            Criteria:
+                -> Year of passing should be greater than or equal to the year of establishment
+        """
+        if value > datetime.date.today().year:
+            raise ValueError("Year of passing should be greater than or equal to the year of establishment")
+
+        return value
+        
 class StudentEducationalInfoSchema(BaseModel):
     student_id: str
     matric_pcnt: float
@@ -154,6 +192,8 @@ class StudentEducationalInfoSchema(BaseModel):
     yop_hs: int
     sgpa: List[float]
     cgpa: float
+    jee_score: float
+    jee_air: float
 
     @validator('matric_pcnt', always=True)
     def check_matric_pcnt_lt_100(cls, value):
@@ -209,7 +249,16 @@ class StudentEducationalInfoSchema(BaseModel):
         
         return value
 
-
+    @validator('jee_score', always=True)
+    def validate_jee_score(cls, value):
+        """Validates JEE score of the student
+            Criterias :  
+                -> JEE score should be between 0 and 100.
+        """
+        if(value < 0 or value > 100):
+            raise ValueError("JEE score is invalid")
+        
+        return value
 
 class StudentAddressFormat(BaseModel):
     pincode: str
@@ -262,6 +311,13 @@ class StudentCompanyLetterInfoSchema(BaseModel):
     company_name: str
     letter_type: str
     letter_link: str
+
+class StudentHigherStudiesInfoSchema(BaseModel):
+    student_id: str
+    programme: str
+    branch: str
+    university: str
+    competitive_exam_info: Optional[StudentCompetitiveSchema] = None
 
 class StudentCertificationInfoSchema(BaseModel):
     student_id: str

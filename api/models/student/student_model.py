@@ -64,14 +64,24 @@ class AddressModel(BaseModel):
     state: str = ''
     district: str = ''
     country: str = ''
+    city: str = ''
     address_line_1: str = ''
     address_line_2: Optional[str] = None
 
+class CompetitiveExamModel(BaseModel):
+    """Competitive Exam Model"""
+
+    competitive_exam: str = ''
+    competitive_yop: Optional[int]
+    exam_id: str = ''
+    exam_score: Optional[float]
+    exam_air: Optional[str] = ''
 
 class StudentModel(Document):
     """Maps student model to database document. """
 
     # Extra functionality use fields
+    register_date: datetime.datetime = datetime.datetime.now()
     refresh_token: str = ''
     is_account_active: bool = False
     is_banned: bool = False
@@ -88,7 +98,9 @@ class StudentModel(Document):
     gender: str
     email: Indexed(str, unique=True) 
     phone: Optional[str] = None
-    password: str 
+    password: str
+    programme: str
+    current_sem: str
     
     # Additional info
     category: str = '' 
@@ -102,7 +114,9 @@ class StudentModel(Document):
     hs_pcnt: Optional[float] = None 
     yop_hs: Optional[int] = None 
     sgpa: List[float] = [] 
-    cgpa: Optional[float] = None 
+    cgpa: Optional[float] = None
+    jee_score: float = None
+    jee_air: float = None
 
     # Skills info
     # TODO: reconsider type
@@ -112,6 +126,9 @@ class StudentModel(Document):
     permanent_address: Optional[AddressModel] = {}
     is_permanent_equals_present: bool = False
     present_address: Optional[AddressModel] = None
+
+    #Competitive Exam info
+    competitive_exam: Optional[CompetitiveExamModel] = {}
     
     # Application info
     applied_positions: Optional[List[PydanticObjectId]] = []
