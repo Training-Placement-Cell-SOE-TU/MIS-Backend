@@ -79,7 +79,6 @@ class JobModel(BaseModel):
 class StudentHigherStudentModel(BaseModel):
     """Student Higher Studies Model"""
 
-    student_id: str = ''
     programme: str = ''
     branch: str = ''
     institution: str = ''
@@ -91,13 +90,11 @@ class StudentHigherStudentModel(BaseModel):
 class CompetitiveExamModel(BaseModel):
     """Competitive Exam Model"""
 
-    # uid: Indexed(str, unique=True) = str(uuid4())
-    student_id: str = ''
-    exam_name: str = ''
-    exam_yop: Optional[int]
-    exam_id: str = ''
-    exam_score: Optional[float]
-    exam_air: Optional[str] = ''
+    name: str = ''
+    yop: Optional[int]
+    id: str = ''
+    score: Optional[float]
+    air: Optional[str] = ''
 
 class StudentModel(Document):
     """Maps student model to database document. """
@@ -137,6 +134,8 @@ class StudentModel(Document):
     yop_hs: Optional[int] = None 
     sgpa: List[float] = [] 
     cgpa: Optional[float] = None
+    jee_score: Optional[float] = None
+    jee_air: Optional[str] = None
 
     # Skills info
     # TODO: reconsider type
@@ -157,18 +156,19 @@ class StudentModel(Document):
     job_type: str = ''
     job_info: Optional[JobModel] = None
     internship_info: Optional[JobModel] = None
-    
+        
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = []
 
     # Higher Studies info
-    study_programme: str = ''
-    study_branch: str = ''
-    study_institution: str = ''
-    study_exam_cleared: str = ''
-    study_institution_id: str = ''
-    study_fellowship: Optional[str] = None
-    study_offer_link: str = ''
+    # study_programme: str = ''
+    # study_branch: str = ''
+    # study_institution: str = ''
+    # study_exam_cleared: str = ''
+    # study_institution_id: str = ''
+    # study_fellowship: Optional[str] = None
+    # study_offer_link: str = ''
+    higher_studies: Optional[StudentHigherStudentModel] = {}
     
     # Job experience info
     job_experience: List[JobExperienceModel] = []
