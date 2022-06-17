@@ -68,11 +68,33 @@ class AddressModel(BaseModel):
     address_line_1: str = ''
     address_line_2: Optional[str] = None
 
+class JobModel(BaseModel):
+    """Job Model"""
+
+    company_name: str = ''
+    designation: str = ''
+    salary: str = ''
+    offer_link: AnyHttpUrl = None
+
+class StudentHigherStudentModel(BaseModel):
+    """Student Higher Studies Model"""
+
+    student_id: str = ''
+    programme: str = ''
+    branch: str = ''
+    institution: str = ''
+    exam_cleared: str = ''
+    institution_id: str = ''
+    fellowship: str = ''
+    offer_link: AnyHttpUrl = None
+
 class CompetitiveExamModel(BaseModel):
     """Competitive Exam Model"""
 
-    competitive_exam: str = ''
-    competitive_yop: Optional[int]
+    # uid: Indexed(str, unique=True) = str(uuid4())
+    student_id: str = ''
+    exam_name: str = ''
+    exam_yop: Optional[int]
     exam_id: str = ''
     exam_score: Optional[float]
     exam_air: Optional[str] = ''
@@ -100,7 +122,7 @@ class StudentModel(Document):
     phone: Optional[str] = None
     password: str
     programme: str
-    current_sem: str
+    current_sem: str = ''
     
     # Additional info
     category: str = '' 
@@ -115,8 +137,6 @@ class StudentModel(Document):
     yop_hs: Optional[int] = None 
     sgpa: List[float] = [] 
     cgpa: Optional[float] = None
-    jee_score: float = None
-    jee_air: float = None
 
     # Skills info
     # TODO: reconsider type
@@ -128,13 +148,27 @@ class StudentModel(Document):
     present_address: Optional[AddressModel] = None
 
     #Competitive Exam info
-    competitive_exam: Optional[CompetitiveExamModel] = {}
+    competitive_exam: Optional[List[CompetitiveExamModel]] = [] 
     
     # Application info
     applied_positions: Optional[List[PydanticObjectId]] = []
+
+    # Job info
+    job_type: str = ''
+    job_info: Optional[JobModel] = None
+    internship_info: Optional[JobModel] = None
     
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = []
+
+    # Higher Studies info
+    study_programme: str = ''
+    study_branch: str = ''
+    study_institution: str = ''
+    study_exam_cleared: str = ''
+    study_institution_id: str = ''
+    study_fellowship: Optional[str] = None
+    study_offer_link: str = ''
     
     # Job experience info
     job_experience: List[JobExperienceModel] = []
