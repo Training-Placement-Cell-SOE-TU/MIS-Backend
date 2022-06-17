@@ -155,34 +155,16 @@ class StudentAdditionalInfoSchema(BaseModel):
 
         return value
 
-class StudentCompetitiveSchema(BaseModel):
-    competitive_exam: str
-    competitive_yop: Optional[int] = None
-    exam_id: str
-    exam_score: Optional[float] = None
-    exam_air: Optional[str] = None
+class StudentCompetitiveExamFormat(BaseModel):
+    name: str
+    yop: Optional[int] = None
+    id: str
+    score: Optional[float] = None
+    air: Optional[str] = None
 
-    @validator('exam_score', always=True)
-    def check_exam_score(cls, value):
-        """Validates the exam score
-            Criteria:
-                -> Exam score should be between 0 and 100
-        """
-        if not (0 <= value <= 100):
-            raise ValueError("Exam score should be between 0 and 100")
-
-        return value
-
-    @validator('competitive_yop', always=True)
-    def check_competitive_yop(cls, value):
-        """Validates the competitive year of passing
-            Criteria:
-                -> Year of passing should be greater than or equal to the year of establishment
-        """
-        if value > datetime.date.today().year:
-            raise ValueError("Year of passing should be greater than or equal to the year of establishment")
-
-        return value
+class StudentCompetitiveExamSchema(BaseModel):
+    student_id: str
+    competitive_exams: Optional[StudentCompetitiveExamFormat]
         
 class StudentEducationalInfoSchema(BaseModel):
     student_id: str
@@ -193,7 +175,7 @@ class StudentEducationalInfoSchema(BaseModel):
     sgpa: List[float]
     cgpa: float
     jee_score: float
-    jee_air: float
+    jee_air: int
 
     @validator('matric_pcnt', always=True)
     def check_matric_pcnt_lt_100(cls, value):
@@ -283,8 +265,6 @@ class StudentAddressInfoSchema(BaseModel):
             then present_address will be empty,
             else will be valid dictionary
         """
-        print(values)
-
         if (values["is_permanent_equals_present"] and 
             values["present_address"] is not None):
 
@@ -312,12 +292,30 @@ class StudentCompanyLetterInfoSchema(BaseModel):
     letter_type: str
     letter_link: str
 
+class StudentPlacementFormat(BaseModel):
+    company_name: str
+    designation: str
+    salary: str
+    offer_link: str
+
+class StudentJobInfoSchema(BaseModel):
+    student_id: str
+    job_type: str
+    job_info: Optional[StudentPlacementFormat]
+    internship_info: Optional[StudentPlacementFormat]  
+
+class StudentHigherStudiesFormat(BaseModel):
+    programme: str  
+    branch: str
+    institution: str
+    exam_cleared: str
+    institution_id: str
+    fellowship: str
+    offer_link: str
+
 class StudentHigherStudiesInfoSchema(BaseModel):
     student_id: str
-    programme: str
-    branch: str
-    university: str
-    competitive_exam_info: Optional[StudentCompetitiveSchema] = None
+    higher_studies: Optional[StudentHigherStudiesFormat]
 
 class StudentCertificationInfoSchema(BaseModel):
     student_id: str

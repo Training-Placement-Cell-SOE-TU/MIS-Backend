@@ -1,7 +1,10 @@
+from optparse import Option
 from typing import Any, Dict, List
 
 from api.models.student.student_model import *
 from pydantic import BaseModel
+
+from api.schemas.student.request_schemas.student_request_schemas import StudentHigherStudiesInfoSchema
 
 
 class AuthorizedUserStudentProfileView(BaseModel):
@@ -34,21 +37,30 @@ class AuthorizedUserStudentProfileView(BaseModel):
     yop_hs: Optional[int]
     sgpa: List[float]
     cgpa: Optional[float]
+    jee_score: Optional[float]
+    jee_air: Optional[str]
 
     # Skills info
     skills: List[Any] = [] 
     
     # Address info
-    permanent_address: Optional[AddressModel]
+    permanent_address: Optional[AddressModel] = {}
     is_permanent_equals_present: bool
     present_address: Optional[AddressModel]
 
     #Competitive Exam info
-    competitive_exam: Optional[CompetitiveExamModel]
+    competitive_exam: Optional[List[CompetitiveExamModel]] = []
     
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]]
+
+    higher_studies: Optional[StudentHigherStudentModel]
     
+    # Job Info
+    job_type: str
+    job_info: Optional[JobModel]
+    internship_info: Optional[JobModel]
+
     # Application info
     applied_positions: Optional[List[PydanticObjectId]] = []
 
