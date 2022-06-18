@@ -9,6 +9,8 @@ from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
 from ..general_use_models import PydanticObjectId
 
 
+print("Hello")
+
 class CompanyLetterModel(BaseModel):
     """Company Letters Model"""
 
@@ -74,7 +76,7 @@ class JobModel(BaseModel):
     company_name: str = ''
     designation: str = ''
     salary: str = ''
-    offer_link: AnyHttpUrl = None
+    offer_link: str = ''
 
 class StudentHigherStudentModel(BaseModel):
     """Student Higher Studies Model"""
@@ -85,7 +87,7 @@ class StudentHigherStudentModel(BaseModel):
     exam_cleared: str = ''
     institution_id: str = ''
     fellowship: str = ''
-    offer_link: AnyHttpUrl = None
+    offer_link: str = ''
 
 class CompetitiveExamModel(BaseModel):
     """Competitive Exam Model"""
@@ -108,6 +110,7 @@ class StudentModel(Document):
     student_id: Indexed(str, unique=True) = str(uuid4())
     events: Optional[List[str]] = []
     
+    print("Hello")
     # Personal info 
     fname: str
     lname: Optional[str] = None
