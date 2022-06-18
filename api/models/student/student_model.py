@@ -90,9 +90,9 @@ class CompetitiveExamModel(BaseModel):
     """Competitive Exam Model"""
 
     name: str = ''
-    yop: Optional[int]
+    yop: Optional[int] = 0
     id: str = ''
-    score: Optional[float]
+    score: Optional[float] = 0
     air: Optional[str] = ''
 
 class StudentModel(Document):

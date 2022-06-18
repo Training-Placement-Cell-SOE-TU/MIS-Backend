@@ -164,7 +164,7 @@ class StudentCompetitiveExamFormat(BaseModel):
 
 class StudentCompetitiveExamSchema(BaseModel):
     student_id: str
-    competitive_exams: Optional[StudentCompetitiveExamFormat]
+    competitive_exam: Optional[StudentCompetitiveExamFormat]
         
 class StudentEducationalInfoSchema(BaseModel):
     student_id: str
