@@ -132,3 +132,5 @@ cython_debug/
 sample*
 tests/*
 tnp-micro/
+.deta/state
+.deta/prog_info
