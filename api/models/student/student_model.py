@@ -184,7 +184,7 @@ class StudentModel(Document):
 
     #TODO: solve this problem to activate this method
     # class Config:
-    anystr_lower = True
+    # anystr_lower = True
 
     class Collection:
         name = "student"
