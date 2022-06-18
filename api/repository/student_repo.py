@@ -151,7 +151,7 @@ async def update_array_of_refs_handler(request, authorization):
     response = await update_handler(
         request, 
         authorization, 
-        student_drivers.Student().update_array_of_refs
+        student_drivers.Student().update_array_of_exams
     )
 
     return response

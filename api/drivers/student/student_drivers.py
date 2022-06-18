@@ -401,9 +401,12 @@ class Student:
         del info["student_id"]
 
         key, values = list(info.items())[0]
+        print(key)
 
         # Get respective field  value
         field_value = getattr(student, key)
+        print(field_value)
+        print(values.__dict__)
 
         counter = 0
 
@@ -432,6 +435,38 @@ class Student:
 
         return False
 
+    async def update_array_of_exams(self, info: Dict):
+        
+        student = await StudentModel.find_one(
+            StudentModel.student_id == info["student_id"]
+        )
+
+        if student is None:
+            return False
+
+        del info["student_id"]
+
+        key, values = list(info.items())[0]
+
+        # Get respective field  value
+        field_value = getattr(student, key)
+
+        values = values.__dict__
+        
+        if values not in field_value:
+            field_value.append(values)
+
+        # Setting updated array to the key
+        setattr(student, key, field_value)
+
+        # Commiting changes in db
+        db_response = await StudentModel.save(student)
+
+        if db_response:
+                
+                return True
+
+        return False
 
     async def get_student_profile(self, roll_no: str):
         #TODO: add suitable doc string and exception handling
