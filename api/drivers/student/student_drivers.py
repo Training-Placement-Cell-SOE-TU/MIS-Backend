@@ -29,9 +29,9 @@ class Student:
         """Adds new student to the database"""
 
         try:
-
             student = StudentModel(**student_details.__dict__)
         
+            print(student.password)
             student.password = pbkdf2_sha256.hash(student.password)
 
             db_response = await StudentModel.save(student)

@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from logging import log
 from os import environ, path
 
 from dotenv import load_dotenv
@@ -56,12 +57,12 @@ def create_app():
 
         except asyncio.TimeoutError as e:
             #TODO: log error and continuous retry
-            print("DB Timeout")
+            log("DB Timeout")
             pass
 
         except errors.DuplicateKeyError as e:
             #TODO: Critical error, notify to admin and dev
-            print("DUPLICATE")
+            log("DUPLICATE")
 
         except Exception as e:
             #TODO: Notify admin

@@ -16,7 +16,7 @@ async def database():
 
     # Create Motor client
     client = motor.motor_asyncio.AsyncIOMotorClient(
-        environ.get("DEV_DB_URI")
+        environ.get("PROD_DB_URI")
     )
 
     await init_beanie(
