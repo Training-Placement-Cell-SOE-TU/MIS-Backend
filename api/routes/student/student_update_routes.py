@@ -74,6 +74,46 @@ def construct_router():
         )
         return response
 
+    @student.put("/update/job", status_code=status.HTTP_200_OK)
+    async def update_job_info(
+        request: student_request_schemas.StudentJobInfoSchema,
+        authorization = Depends(authentication_middleware.is_authenticated)
+        ):
+    
+        """Student job info update route"""
+
+        response = await student_repo.update_student(
+            request, 
+            authorization
+        )
+        return response
+
+    @student.patch("/update/exams", status_code=status.HTTP_200_OK)
+    async def update_exams_info(
+        request: student_request_schemas.StudentCompetitiveExamSchema,
+        authorization = Depends(authentication_middleware.is_authenticated)
+        ):
+            
+            """Student exams info update route"""
+    
+            response = await student_repo.update_array_of_refs_handler(
+                request.__dict__,
+                authorization
+            )
+            return response
+
+    @student.put("/update/studies", status_code=status.HTTP_200_OK)
+    async def update_higher_studies_info(
+        request: student_request_schemas.StudentHigherStudiesInfoSchema,
+        authorization = Depends(authentication_middleware.is_authenticated)
+    ):
+        """Student higher studies info update route"""
+
+        response = await student_repo.update_student(
+            request,
+            authorization
+        )
+        return response
 
     @student.patch("/update/skills", status_code=status.HTTP_200_OK)
     async def update_student_skills(
