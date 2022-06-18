@@ -8,9 +8,6 @@ from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
 
 from ..general_use_models import PydanticObjectId
 
-
-print("Hello")
-
 class CompanyLetterModel(BaseModel):
     """Company Letters Model"""
 
@@ -110,7 +107,6 @@ class StudentModel(Document):
     student_id: Indexed(str, unique=True) = str(uuid4())
     events: Optional[List[str]] = []
     
-    print("Hello")
     # Personal info 
     fname: str
     lname: Optional[str] = None
