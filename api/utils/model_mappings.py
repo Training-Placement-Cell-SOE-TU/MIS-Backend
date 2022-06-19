@@ -7,5 +7,6 @@ model_mappings = {
     "certifications" : CertificationModel,
     "score_cards": ScorecardModel,
     "social_links": SocialModel,
-    "notifications": NotificationModel
+    "notifications": NotificationModel,
+    "competitive_exams": CompetitiveExamModel,
 }

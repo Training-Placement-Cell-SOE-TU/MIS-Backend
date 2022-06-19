@@ -88,9 +88,9 @@ def construct_router():
         )
         return response
 
-    @student.patch("/update/exams", status_code=status.HTTP_200_OK)
+    @student.put("/update/exams", status_code=status.HTTP_200_OK)
     async def update_exams_info(
-        request: student_request_schemas.StudentCompetitiveExamSchema,
+        request: student_request_schemas.UpdateStudentCompetitiveExamInfoSchema,
         authorization = Depends(authentication_middleware.is_authenticated)
         ):
             

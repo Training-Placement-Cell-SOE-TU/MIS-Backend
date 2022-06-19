@@ -30,8 +30,7 @@ class Student:
 
         try:
             student = StudentModel(**student_details.__dict__)
-        
-            print(student.password)
+
             student.password = pbkdf2_sha256.hash(student.password)
 
             db_response = await StudentModel.save(student)
@@ -129,6 +128,49 @@ class Student:
             raise exceptions.UnexpectedError()
 
     
+    async def update_array_of_exams(self, info):
+
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+
+            if student is None:
+                return False
+
+            info_type = info["type"]
+
+            model = model_mappings[info_type]
+
+            # Initiates model with incoming data for auto-generating of index fields
+            data_to_append = model(**info["content"])
+
+            data_to_append = data_to_append.__dict__
+
+            # Gets current data of field to update
+            field_data = getattr(student, info_type)
+
+            for field in field_data:
+                field = field.__dict__
+                if field["name"] == data_to_append["name"]:
+                    field_data.remove(field)
+                    field_data.append(data_to_append)
+                    setattr(student, info_type, field_data)
+
+                    db_response = await StudentModel.save(student)
+                    break
+                    
+            return True
+
+        except DuplicateKeyError as e:
+            #TODO: log to logger
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            #TODO: log to logger
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
 
     async def delete_from_array_of_dict(self, info: dict):
         try:
@@ -435,38 +477,38 @@ class Student:
 
         return False
 
-    async def update_array_of_exams(self, info: Dict):
+    # async def update_array_of_exams(self, info: Dict):
         
-        student = await StudentModel.find_one(
-            StudentModel.student_id == info["student_id"]
-        )
+    #     student = await StudentModel.find_one(
+    #         StudentModel.student_id == info["student_id"]
+    #     )
 
-        if student is None:
-            return False
+    #     if student is None:
+    #         return False
 
-        del info["student_id"]
+    #     del info["student_id"]
 
-        key, values = list(info.items())[0]
+    #     key, values = list(info.items())[0]
 
-        # Get respective field  value
-        field_value = getattr(student, key)
+    #     # Get respective field  value
+    #     field_value = getattr(student, key)
 
-        values = values.__dict__
+    #     values = values.__dict__
         
-        if values not in field_value:
-            field_value.append(values)
+    #     if values not in field_value:
+    #         field_value.append(values)
 
-        # Setting updated array to the key
-        setattr(student, key, field_value)
+    #     # Setting updated array to the key
+    #     setattr(student, key, field_value)
 
-        # Commiting changes in db
-        db_response = await StudentModel.save(student)
+    #     # Commiting changes in db
+    #     db_response = await StudentModel.save(student)
 
-        if db_response:
+    #     if db_response:
                 
-                return True
+    #             return True
 
-        return False
+    #     return False
 
     async def get_student_profile(self, roll_no: str):
         #TODO: add suitable doc string and exception handling

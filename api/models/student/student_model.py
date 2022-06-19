@@ -146,7 +146,7 @@ class StudentModel(Document):
     present_address: Optional[AddressModel] = None
 
     #Competitive Exam info
-    competitive_exam: Optional[List[CompetitiveExamModel]] = [] 
+    competitive_exams: Optional[List[CompetitiveExamModel]] = [] 
     
     # Application info
     applied_positions: Optional[List[PydanticObjectId]] = []
@@ -159,14 +159,6 @@ class StudentModel(Document):
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = []
 
-    # Higher Studies info
-    # study_programme: str = ''
-    # study_branch: str = ''
-    # study_institution: str = ''
-    # study_exam_cleared: str = ''
-    # study_institution_id: str = ''
-    # study_fellowship: Optional[str] = None
-    # study_offer_link: str = ''
     higher_studies: Optional[StudentHigherStudentModel] = {}
     
     # Job experience info
