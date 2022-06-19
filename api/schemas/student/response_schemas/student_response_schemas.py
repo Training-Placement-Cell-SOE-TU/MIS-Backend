@@ -49,7 +49,7 @@ class AuthorizedUserStudentProfileView(BaseModel):
     present_address: Optional[AddressModel]
 
     #Competitive Exam info
-    competitive_exam: Optional[List[CompetitiveExamModel]] = []
+    competitive_exams: Optional[List[CompetitiveExamModel]]
     
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]]

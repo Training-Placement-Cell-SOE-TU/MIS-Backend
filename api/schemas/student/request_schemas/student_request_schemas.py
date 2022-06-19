@@ -155,16 +155,18 @@ class StudentAdditionalInfoSchema(BaseModel):
 
         return value
 
-class StudentCompetitiveExamFormat(BaseModel):
+class StudentCompetitiveExamInfoSchema(BaseModel):
+    student_id: str
     name: str
     yop: Optional[int] = None
     id: str
     score: Optional[float] = None
     air: Optional[str] = None
 
-class StudentCompetitiveExamSchema(BaseModel):
+class UpdateStudentCompetitiveExamInfoSchema(BaseModel):
     student_id: str
-    competitive_exam: Optional[StudentCompetitiveExamFormat]
+    type: str
+    content: object
         
 class StudentEducationalInfoSchema(BaseModel):
     student_id: str

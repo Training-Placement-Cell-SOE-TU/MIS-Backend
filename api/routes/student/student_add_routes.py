@@ -97,5 +97,21 @@ def construct_router():
         )
         return response
 
+    @student.post("/add/exams", status_code=status.HTTP_200_OK)
+    async def add_competitive_exams(
+            request: student_request_schemas.StudentCompetitiveExamInfoSchema,
+            authorization = Depends(authentication_middleware.is_authenticated)
+        ):
+            
+            """Handles competitive exams addition to student's profile"""
+    
+            model_type = "competitive_exams"
+            print(request)
+    
+            response = await student_repo.add_to_array_of_dict(
+                request, authorization, model_type
+            )
+            
+            return response
     
     return student
