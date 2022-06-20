@@ -13,6 +13,7 @@ from api.utils.company_profile_verifier import validate_company_profile
 from api.drivers.student import student_drivers
 
 class RegisterStudentSchema(BaseModel):
+    student_id: str
     fname: str
     lname: str
     roll_no: str
