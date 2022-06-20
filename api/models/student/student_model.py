@@ -104,7 +104,7 @@ class StudentModel(Document):
     is_account_active: bool = False
     is_banned: bool = False
     token: Optional[str] = ''
-    student_id: Indexed(str, unique=True) = str(uuid4())
+    student_id: Indexed(str, unique=True)
     events: Optional[List[str]] = []
     
     # Personal info 
