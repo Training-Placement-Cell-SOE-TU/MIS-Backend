@@ -146,15 +146,21 @@ class StudentModel(Document):
     present_address: Optional[AddressModel] = None
 
     #Competitive Exam info
-    competitive_exams: Optional[List[CompetitiveExamModel]] = [] 
+    competitive_exams: Optional[List[CompetitiveExamModel]] = [{
+        'name': '',
+        'yop': 0,
+        'id': '',
+        'score': 0,
+        'air': ''
+    }] 
     
     # Application info
     applied_positions: Optional[List[PydanticObjectId]] = []
 
     # Job info
     job_type: str = ''
-    job_info: Optional[JobModel] = None
-    internship_info: Optional[JobModel] = None
+    job_info: Optional[JobModel] = {}
+    internship_info: Optional[JobModel] = {}
         
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = []
