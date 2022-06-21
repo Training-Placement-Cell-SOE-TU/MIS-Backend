@@ -143,7 +143,7 @@ class StudentModel(Document):
     # Address info
     permanent_address: Optional[AddressModel] = {}
     is_permanent_equals_present: bool = False
-    present_address: Optional[AddressModel] = None
+    present_address: Optional[AddressModel] = {}
 
     #Competitive Exam info
     competitive_exams: Optional[List[CompetitiveExamModel]] = [{
