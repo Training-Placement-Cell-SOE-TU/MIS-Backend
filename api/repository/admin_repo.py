@@ -68,24 +68,28 @@ async def assign_otp(student_ids: Dict):
     return not is_failed
 
 
-async def add_admin_handler(request):
+async def add_admin_handler(request, authorization):
 
-    response = await admin_driver.Admin().add_admin(request)
+    try:
+        if not authorization["flag"]:
+            raise exceptions.AuthenticationError()
 
-    if response:
+        response = await admin_driver.Admin().add_admin(request)
+
+        if response:
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message" : "admin added successfully"
+                }
+            )
+    except exceptions.AuthenticationError as e:
         return JSONResponse(
-            status_code=200,
-            content={
-                "message" : "admin added successfully"
-            }
-        )
-    
-    return JSONResponse(
-            status_code=404,
-            content={
-                "message" : "admin cannot be added"
-            }
-        )
+                status_code=404,
+                content={
+                    "message" : "admin cannot be added"
+                }
+            )
 
 
 async def get_admin_profile_handler(username, authorization):

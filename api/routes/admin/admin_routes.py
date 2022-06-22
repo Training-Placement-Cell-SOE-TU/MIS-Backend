@@ -1,5 +1,6 @@
 from urllib.request import Request
 from api.drivers.admin.admin_driver import Admin
+from api.middlewares import authentication_middleware
 from api.models import student
 from api.models.admin.admin_model import AdminModel
 from api.repository import admin_repo
@@ -74,9 +75,10 @@ def construct_router():
             )
 
     @admin.post("/add")
-    async def add_admin(request: admin_request_schemas.AddAdminRequestSchema):
+    async def add_admin(request: admin_request_schemas.AddAdminRequestSchema,
+                        authorization = Depends(authentication_middleware.is_authenticated)):
 
-        response = await admin_repo.add_admin_handler(request.__dict__)
+        response = await admin_repo.add_admin_handler(request.__dict__, authorization)
     
         return response
 

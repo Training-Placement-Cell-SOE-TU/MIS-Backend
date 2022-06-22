@@ -11,7 +11,7 @@ def construct_router():
         tags=["Admin"]
     )
 
-    @admin.get('/{username}/admin-console/{nav}')
+    @admin.get('/admin-console/{username}/{nav}')
     async def get_admin_console(
         username: str,
         nav: str,
