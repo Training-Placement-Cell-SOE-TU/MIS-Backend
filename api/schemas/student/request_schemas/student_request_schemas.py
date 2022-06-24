@@ -91,6 +91,7 @@ class StudentPersonalInfoSchema(BaseModel):
     email: EmailStr
     phone: str
     current_sem: str
+    photo: Optional[str]
 
     @validator('batch', always=True)
     def check_batch_le_current_year(cls, value):

@@ -23,6 +23,7 @@ class AuthorizedUserStudentProfileView(BaseModel):
     phone: str
     password: str
     current_sem: str 
+    photo: Optional[str]
     
     # Additional info
     category: str

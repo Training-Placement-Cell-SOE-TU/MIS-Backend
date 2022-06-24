@@ -126,6 +126,7 @@ class StudentModel(Document):
     password: str
     programme: str
     current_sem: str = ''
+    photo: Optional[str] = ''
     
     # Additional info
     category: str = '' 
