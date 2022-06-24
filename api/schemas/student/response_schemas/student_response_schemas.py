@@ -54,6 +54,8 @@ class AuthorizedUserStudentProfileView(BaseModel):
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]]
 
+    offer_letters: Optional[List[OfferLetterModel]]
+
     higher_studies: Optional[StudentHigherStudentModel]
     
     # Job Info

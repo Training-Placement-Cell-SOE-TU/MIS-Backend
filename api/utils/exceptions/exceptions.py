@@ -31,6 +31,21 @@ class DuplicateStudent(Exception):
     def __repr__(self):
         return {self.message}
 
+class OutOfLimit(Exception):
+    """Handles out of limit error
+
+        Attributes:
+            message --> additional message to log or print
+    
+    """
+ 
+    def __init__(self, message: str ="array out of limit"):
+
+        self.message = message
+
+    def __repr__(self):
+        return {self.message} 
+
 class AuthenticationError(Exception):
     """Handles user authentication error
 

@@ -9,4 +9,5 @@ model_mappings = {
     "social_links": SocialModel,
     "notifications": NotificationModel,
     "competitive_exams": CompetitiveExamModel,
+    "offer_letters": OfferLetterModel,
 }

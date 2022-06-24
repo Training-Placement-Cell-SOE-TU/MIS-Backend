@@ -17,6 +17,13 @@ class CompanyLetterModel(BaseModel):
     letter_link: str
     is_verified: bool = False
 
+class OfferLetterModel(BaseModel):
+    """Offer Letter Model"""
+    
+    uid: Indexed(str, unique=True) = str(uuid4())
+    name: str
+    link: str
+    is_verified: bool = False
 
 class JobExperienceModel(BaseModel):
     """Job Experience Model"""
@@ -164,6 +171,8 @@ class StudentModel(Document):
         
     # Company Letters info
     company_letters: Optional[List[CompanyLetterModel]] = []
+
+    offer_letters: Optional[List[OfferLetterModel]] = []
 
     higher_studies: Optional[StudentHigherStudentModel] = {}
     
