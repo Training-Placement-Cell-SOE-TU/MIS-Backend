@@ -143,28 +143,14 @@ def construct_router():
 
     @student.patch("/update/password", status_code=status.HTTP_200_OK)
     async def update_student_password(
-        request : student_request_schemas.UpdateStudentPasswordSchema
+        request : student_request_schemas.UpdateStudentPasswordSchema,
+        authorization = Depends(authentication_middleware.is_authenticated)
     ):
-        try:
-            response = await student_drivers.Student().update_password(request.__dict__)
-
-            if response:
-                return JSONResponse(
-                    status_code = status.HTTP_200_OK,
-                    content={"message" : "password updated successfully"}
-                )
-
-            return JSONResponse(
-                status_code = status.HTTP_404_NOT_FOUND,
-                content={"message" : "student does not exist"}
+        response = await student_repo.update_student_password(
+            request.__dict__,
+            authorization
             )
 
-        except Exception as e:
-            #TODO: log to logger
-            return JSONResponse(
-                status_code = status.HTTP_304_NOT_MODIFIED,
-                content={"message" : "password cannot be updated successfully"}
-            )
-        
+        return response        
     
     return student

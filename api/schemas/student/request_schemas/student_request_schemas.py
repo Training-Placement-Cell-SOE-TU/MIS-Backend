@@ -295,6 +295,11 @@ class StudentCompanyLetterInfoSchema(BaseModel):
     letter_type: str
     letter_link: str
 
+class StudentOfferLetterInfoSchema(BaseModel):
+    student_id: str
+    name: str
+    link: str
+
 class StudentPlacementFormat(BaseModel):
     company_name: str
     designation: str
@@ -516,3 +521,6 @@ class UpdateStudentPasswordSchema(BaseModel):
              one digit and one special character""")
 
         return value
+
+    class Config:
+        anystr_lower = True

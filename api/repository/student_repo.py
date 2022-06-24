@@ -92,6 +92,31 @@ async def add_to_array_of_dict(request, authorization, model_type):
 
     return response
 
+async def add_to_array_of_offers(request, authorization, model_type):
+    """Adds new object to field type list of objects in 
+        authorized student's profile
+    """
+
+    student_id = request.student_id
+
+    data = request.__dict__
+
+    del data["student_id"]
+
+    data = {
+        "type" : model_type,
+        "student_id" : student_id,
+        "content" : data
+    }
+
+    response = await update_handler(
+        data, 
+        authorization, 
+        student_drivers.Student().update_array_of_offers
+    )
+
+    return response
+
 
 async def delete_to_array_of_dict(request, authorization):
     """Deletes new object to field type list of objects in 
@@ -142,6 +167,17 @@ async def verify_student_handler(request, authorization):
 
         return JSONResponse(status_code=403, 
             content={"message" : authorization["message"]})
+
+async def update_student_password(request, authorization):
+    """Updates student's password"""
+
+    response = await update_handler(
+        request, 
+        authorization, 
+        student_drivers.Student().update_password
+    )
+
+    return response
 
     
 

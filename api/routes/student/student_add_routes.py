@@ -80,6 +80,19 @@ def construct_router():
         )
         return response
 
+    @student.post("/add/offer", status_code=status.HTTP_200_OK)
+    async def add_offer_letter(
+            request: student_request_schemas.StudentOfferLetterInfoSchema,
+            authorization = Depends(authentication_middleware.is_authenticated)
+    ):
+        """Handles offer letter addition to student schema"""
+
+        model_type = "offer_letters"
+
+        response = await student_repo.add_to_array_of_offers(
+            request, authorization, model_type
+        )
+        return response
         
 
     @student.post("/add/social", status_code=status.HTTP_200_OK)

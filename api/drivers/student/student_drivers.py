@@ -1,6 +1,8 @@
 from typing import Dict
 from uuid import uuid4
 
+from attr import field
+
 from api.models.student.skill_model import SkillsModel
 from api.models.student.student_model import *
 from api.schemas.student.request_schemas import student_request_schemas
@@ -127,7 +129,58 @@ class Student:
             print(f"{e} excep err : student driver")
             raise exceptions.UnexpectedError()
 
-    
+    async def update_array_of_offers(self, info: Dict):
+        try:
+            student = await StudentModel.find_one(
+                StudentModel.student_id == info["student_id"]
+            )
+
+            if student is None:
+                return False
+
+            info_type = info["type"]
+
+            # Gets model corresponding to field type
+            model = model_mappings[info_type]
+
+            # Initiates model with incoming data for auto-generating of index fields
+            data_to_append = model(**info["content"])
+
+            data_to_append = data_to_append.__dict__
+
+            # Gets current data of field to update
+            field_data = getattr(student, info_type)
+
+            if len(field_data) == 0:
+                field_data.append(data_to_append)
+            else:
+                for field in field_data:
+                    field = field.__dict__
+                    if field["name"] == data_to_append['name']:
+                        field_data.remove(field)
+                        field_data.append(data_to_append)
+                        break
+                    elif len(field_data) == 2:
+                        return False
+                    else:
+                        field_data.append(data_to_append)
+                        break
+
+            # Updates class with appended field data
+            setattr(student, info_type, field_data)
+
+            db_response = await StudentModel.save(student)
+
+            return True
+
+        except DuplicateKeyError as e:
+            print(f"{e} dupkey err : student driver")
+            raise exceptions.DuplicateStudent()
+
+        except Exception as e:
+            print(f"{e} excep err : student driver")
+            raise exceptions.UnexpectedError()
+
     async def update_array_of_exams(self, info):
 
         try:
