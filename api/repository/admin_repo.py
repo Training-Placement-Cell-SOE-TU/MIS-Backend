@@ -1,4 +1,6 @@
+from fnmatch import fnmatch
 from typing import Dict
+from urllib import response
 from urllib.request import Request
 from api.utils.exceptions import exceptions
 
@@ -67,6 +69,41 @@ async def assign_otp(student_ids: Dict):
     
     return not is_failed
 
+async def student_handler(student_id, authorization, fn):
+    try:
+        if not authorization["flag"]:
+            raise exceptions.AuthenticationError()
+
+        response = await fn(student_id)
+
+        return response
+
+    except Exception as e:
+            
+            Logger.error(e, log_msg="exception in student_handler")
+    
+            return JSONResponse(status_code=500, 
+            content={"message" : "internal server error"})
+
+
+async def ban_student(student_id, authorization):
+    
+    response = await student_handler(
+        student_id,
+        authorization,
+        student_drivers.Student().ban_student
+    )
+
+    return response
+
+async def delete_student(student_id, authorization):
+    response = await student_handler(
+        student_id,
+        authorization,
+        student_drivers.Student().delete_student
+    )
+
+    return response
 
 async def add_admin_handler(request, authorization):
 
