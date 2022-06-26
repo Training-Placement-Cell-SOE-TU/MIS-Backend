@@ -3,6 +3,7 @@ from urllib.request import Request
 from api.drivers import student
 
 from api.drivers.student import student_drivers
+from api.repository import admin_repo
 from api.middlewares import authentication_middleware
 from api.schemas.admin.admin_request_schema import admin_request_schemas
 from api.schemas.student.request_schemas import student_request_schemas
@@ -93,8 +94,11 @@ def construct_router():
         )
 
     @admin.get("/ban/student/{student_id}")
-    async def ban_student_account(student_id: str):
-        response = await student_drivers.Student().ban_student(student_id)
+    async def ban_student_account(
+        student_id: str,
+        authorization = Depends(authentication_middleware.is_authenticated)
+        ):
+        response = await admin_repo.ban_student(student_id, authorization)
 
         if response == "already_banned":
             return JSONResponse(
@@ -111,8 +115,11 @@ def construct_router():
         )
 
     @admin.delete("/delete/student/{student_id}")
-    async def delete_student_account(student_id: str):
-        response = await student_drivers.Student().delete_student(student_id)
+    async def delete_student_account(
+        student_id: str,
+        authorization = Depends(authentication_middleware.is_authenticated)
+        ):
+        response = await admin_repo.delete_student(student_id, authorization)
 
         if response:
             return JSONResponse(
