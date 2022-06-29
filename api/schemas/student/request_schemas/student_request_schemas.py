@@ -25,14 +25,50 @@ class RegisterStudentSchema(BaseModel):
     password: str
     programme: str
 
+    @validator('fname', always=True)
+    def lower_fname(cls, value):
+        """Lower the fname to save it in database"""
+        
+        return value.lower()
+
+    @validator('lname', always=True)
+    def lower_lname(cls, value):
+        """Lower the lname to save it in database"""
+        
+        return value.lower()
+
+    @validator('roll_no', always=True)
+    def lower_roll_no(cls, value):
+        """Lower the roll_no to save it in database"""
+        
+        return value.lower()
+
+    @validator('branch', always=True)
+    def lower_branch(cls, value):
+        """Lower the branch to save it in database"""
+        
+        return value.lower()
+
+    @validator('programme', always=True)
+    def lower_programme(cls, value):
+        """Lower the programme to save it in database"""
+        
+        return value.lower()
+
+    @validator('gender', always=True)
+    def lower_gender(cls, value):
+        """Lower the gender to save it in the database"""
+
+        return value.lower()
+
     @validator('email', always=True)
     def check_gmail(cls, value):
         "Only Gmail Account Allowed"
 
-        if "@gmail.com" not in value:
+        if "@gmail.com" not in value.lower():
             raise ValueError("Only Gmail Account Allowed")
 
-        return value
+        return value.lower()
     
     @validator('batch', always=True)
     def check_batch_le_current_year(cls, value):
@@ -75,7 +111,6 @@ class RegisterStudentSchema(BaseModel):
 
 
     class Config:
-        anystr_lower = True
         validate_assignment = True
 
 
@@ -522,6 +557,3 @@ class UpdateStudentPasswordSchema(BaseModel):
              one digit and one special character""")
 
         return value
-
-    class Config:
-        anystr_lower = True
