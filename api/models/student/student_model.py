@@ -154,13 +154,7 @@ class StudentModel(Document):
     present_address: Optional[AddressModel]
 
     #Competitive Exam info
-    competitive_exams: Optional[List[CompetitiveExamModel]] = [{
-        'name': '',
-        'yop': 0,
-        'id': '',
-        'score': 0,
-        'air': ''
-    }] 
+    competitive_exams: Optional[List[CompetitiveExamModel]] = [] 
     
     # Application info
     applied_positions: Optional[List[PydanticObjectId]] = []
